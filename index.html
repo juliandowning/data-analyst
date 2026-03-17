@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Analyst Simulator — DigitalXperience.ai</title>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+:root{
+  --bg:#0a0a0a; --surface:#111111; --card:#181818; --border:#2c2c2c;
+  --brand1:#8FC32E; --brand2:#889CE7;
+  --text:#f0f0f0; --muted:#aaaaaa; --red:#FF4D6D; --warn:#FF9500;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Open Sans',sans-serif;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(143,195,46,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(136,156,231,.025) 1px,transparent 1px);background-size:44px 44px;pointer-events:none;z-index:0;}
+
+/* ── SCREENS ── */
+.screen{display:none;position:relative;z-index:1;}
+#s-home{min-height:100vh;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:48px 24px 0;}
+#s-results{flex-direction:column;align-items:center;padding:48px 24px 0;min-height:100vh;}
+
+/* ── DX LOGO ── */
+.dx-logo{display:inline-flex;align-items:center;gap:8px;}
+.dx-logo-badge{background:linear-gradient(135deg,var(--brand1),var(--brand2));border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;width:32px;height:32px;}
+.dx-logo-badge svg{width:18px;height:18px;}
+.dx-logo-text{font-family:'Open Sans',sans-serif;font-weight:800;font-size:1rem;letter-spacing:-.4px;color:var(--text);}
+.dx-logo-text span{color:var(--brand1);}
+.dx-logo-sub{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);letter-spacing:.5px;margin-top:1px;}
+.dx-logo-stack{display:flex;flex-direction:column;line-height:1.1;}
+.dx-logo-lg .dx-logo-badge{width:52px;height:52px;border-radius:11px;}
+.dx-logo-lg .dx-logo-badge svg{width:30px;height:30px;}
+.dx-logo-lg .dx-logo-text{font-size:1.7rem;letter-spacing:-.6px;}
+.dx-logo-lg .dx-logo-sub{font-size:.8rem;}
+.dx-logo-sm .dx-logo-badge{width:24px;height:24px;border-radius:5px;}
+.dx-logo-sm .dx-logo-badge svg{width:13px;height:13px;}
+.dx-logo-sm .dx-logo-text{font-size:.82rem;}
+
+/* ── FOOTER ── */
+.footer{text-align:center;padding:20px 24px 28px;font-size:.75rem;color:var(--muted);border-top:1px solid var(--border);margin-top:44px;line-height:1.9;width:100%;}
+
+/* ── HEADER ── */
+.hdr{background:rgba(8,8,8,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:10px 22px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;gap:12px;}
+.prog-bar{display:flex;align-items:center;gap:6px;flex:1;margin:0 16px;min-width:0;}
+.prog-step{flex:1;height:4px;background:var(--border);border-radius:2px;transition:background .4s;}
+.prog-step.done{background:var(--brand1);}
+.prog-step.active{background:linear-gradient(90deg,var(--brand1),var(--brand2));}
+.hdr-right{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.team-chip{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);background:var(--card);border:1px solid var(--border);border-radius:5px;padding:3px 8px;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.spi-pill{font-family:'DM Mono',monospace;font-size:10px;color:var(--brand2);display:flex;align-items:center;gap:5px;}
+.spi-val{font-size:1.1rem;font-weight:500;}
+.score-bump{animation:scorebump .4s ease;}
+@keyframes scorebump{0%{transform:scale(1)}50%{transform:scale(1.4);color:var(--brand1)}100%{transform:scale(1)}}
+.timer-outer{display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0;}
+.timer-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);}
+.timer-wrap{position:relative;width:58px;height:58px;}
+.timer-wrap svg{transform:rotate(-90deg);}
+.timer-bg{fill:none;stroke:var(--border);stroke-width:4;}
+.t-ring{fill:none;stroke:var(--brand1);stroke-width:4;stroke-dasharray:163;stroke-dashoffset:0;stroke-linecap:round;transition:stroke-dashoffset 1s linear,stroke .4s;}
+.t-inner{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
+.t-mins{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;line-height:1;}
+.timer-urgent .t-ring{stroke:var(--red);}
+.timer-urgent .t-mins{color:var(--red);}
+.timer-urgent{animation:timerpulse 1s ease infinite;}
+@keyframes timerpulse{0%,100%{opacity:1}50%{opacity:.6}}
+
+/* ── METERS ── */
+.meters-bar{background:rgba(8,8,8,.9);border-bottom:1px solid var(--border);padding:8px 22px;display:flex;gap:18px;flex-wrap:wrap;}
+.meter-item{display:flex;align-items:center;gap:7px;min-width:130px;}
+.meter-lbl{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);white-space:nowrap;}
+.meter-track{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden;min-width:50px;}
+.meter-fill{height:100%;border-radius:3px;transition:width .5s ease;}
+.fill-traf{background:linear-gradient(90deg,var(--brand1),#c8e87a);}
+.fill-eng{background:linear-gradient(90deg,var(--brand2),#b8c8ff);}
+.fill-conv{background:linear-gradient(90deg,var(--warn),#ffbd5a);}
+.fill-roi{background:linear-gradient(90deg,var(--red),#ff8fa3);}
+.meter-val{font-family:'DM Mono',monospace;font-size:9px;color:var(--text);width:24px;text-align:right;}
+
+/* ── HOME ── */
+.home-logo{margin-bottom:6px;animation:fadeUp .5s ease both;}
+.home-tagline{font-size:.75rem;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-bottom:30px;animation:fadeUp .4s .06s ease both;}
+.home-h{font-size:clamp(2.4rem,6vw,3.8rem);font-weight:800;letter-spacing:-1.8px;line-height:1.04;margin-bottom:14px;animation:fadeUp .4s .1s ease both;}
+.home-h em{background:linear-gradient(90deg,var(--brand1),var(--brand2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-style:normal;}
+.home-sub{color:var(--muted);font-size:.95rem;line-height:1.75;max-width:480px;margin:0 auto 18px;animation:fadeUp .4s .12s ease both;}
+.home-meta{display:flex;justify-content:center;gap:22px;flex-wrap:wrap;margin-top:20px;animation:fadeUp .4s .2s ease both;}
+.meta-item{display:flex;align-items:center;gap:7px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);}
+.meta-dot{width:6px;height:6px;border-radius:50%;}
+.reg-form{width:100%;max-width:480px;display:flex;flex-direction:column;gap:10px;animation:fadeUp .4s .16s ease both;}
+.reg-in{width:100%;padding:15px 18px;background:var(--surface);border:1.5px solid var(--border);border-radius:9px;font-family:'Open Sans',sans-serif;font-size:1rem;color:var(--text);outline:none;transition:border-color .2s;text-align:center;}
+.reg-in:focus{border-color:var(--brand2);}
+.reg-in.err{border-color:var(--red);}
+.reg-in::placeholder{color:var(--muted);}
+.btn-launch{padding:18px;background:linear-gradient(135deg,var(--brand1),var(--brand2));color:#000;border:none;border-radius:9px;font-family:'Open Sans',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;transition:all .2s;}
+.btn-launch:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(143,195,46,.3);}
+
+/* ── GAME ── */
+#s-game{min-height:100vh;}
+.game-body{max-width:820px;margin:0 auto;padding:32px 26px 110px;}
+@media(max-width:580px){.game-body{padding:20px 14px 110px;}}
+.phase-pill{display:inline-flex;align-items:center;gap:7px;padding:5px 14px;border-radius:100px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;margin-bottom:22px;border:1px solid;}
+.ph1{background:rgba(143,195,46,.08);border-color:rgba(143,195,46,.3);color:var(--brand1);}
+.ph2{background:rgba(136,156,231,.08);border-color:rgba(136,156,231,.3);color:var(--brand2);}
+.ph3{background:rgba(255,149,0,.08);border-color:rgba(255,149,0,.3);color:var(--warn);}
+.ph4{background:rgba(255,77,109,.08);border-color:rgba(255,77,109,.3);color:var(--red);}
+.phase-h{font-size:clamp(1.4rem,3vw,2rem);font-weight:800;line-height:1.2;margin-bottom:8px;letter-spacing:-.5px;}
+.phase-sub{font-size:.88rem;color:var(--muted);line-height:1.7;margin-bottom:28px;max-width:620px;}
+
+/* dataset */
+.dataset-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:24px;overflow-x:auto;}
+.dataset-title{font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--brand1);margin-bottom:12px;}
+.data-table{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.8rem;}
+.data-table th{text-align:left;color:var(--muted);padding:6px 12px;border-bottom:1px solid var(--border);font-weight:400;font-size:.68rem;letter-spacing:1px;text-transform:uppercase;}
+.data-table td{padding:8px 12px;border-bottom:1px solid var(--border);}
+.data-table tr:last-child td{border-bottom:none;}
+.val{color:var(--text);font-weight:700;}
+.down-val{color:var(--red);}
+.up-val{color:var(--brand1);}
+.warn-val{color:var(--warn);}
+
+/* questions */
+.q-block{margin-bottom:30px;}
+.q-label{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.q-text{font-size:clamp(1rem,2.2vw,1.2rem);font-weight:700;line-height:1.3;margin-bottom:16px;letter-spacing:-.3px;}
+.sel-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:500px){.sel-grid{grid-template-columns:1fr;}}
+.sel-btn{background:var(--card);border:1.5px solid var(--border);border-radius:11px;padding:14px 16px;text-align:left;cursor:pointer;transition:all .17s;color:var(--text);font-family:'Open Sans',sans-serif;font-size:.85rem;line-height:1.5;width:100%;}
+.sel-btn:hover:not(.locked){border-color:var(--brand2);transform:translateY(-1px);}
+.sel-btn.correct{border-color:var(--brand1);background:rgba(143,195,46,.07);cursor:default;}
+.sel-btn.wrong{border-color:var(--red);background:rgba(255,77,109,.06);cursor:default;}
+.sel-btn.locked{cursor:default;opacity:.45;}
+.sel-btn.correct.locked,.sel-btn.wrong.locked{opacity:1;}
+.s-opt-letter{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted);margin-bottom:4px;}
+.s-opt-title{font-weight:700;font-size:.88rem;}
+.feedback-box{margin-top:10px;padding:11px 14px;border-radius:9px;font-size:.82rem;line-height:1.6;display:none;}
+.feedback-box.on{display:block;}
+.feedback-box.good{background:rgba(143,195,46,.07);border:1px solid rgba(143,195,46,.2);color:#c8e87a;}
+.feedback-box.bad{background:rgba(255,77,109,.07);border:1px solid rgba(255,77,109,.2);color:#ffb3be;}
+
+/* calc */
+.calc-grid{display:grid;gap:14px;margin-bottom:18px;}
+.calc-row{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:16px 18px;}
+.calc-row-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px;}
+.calc-lbl{font-weight:700;font-size:.9rem;}
+.calc-formula{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:3px 8px;}
+.calc-inputs{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.calc-in{background:var(--surface);border:1.5px solid var(--border);border-radius:7px;padding:10px 12px;font-family:'DM Mono',monospace;font-size:.9rem;color:var(--text);outline:none;width:110px;transition:border-color .2s;}
+.calc-in:focus{border-color:var(--brand2);}
+.calc-in.ok{border-color:var(--brand1);}
+.calc-in.err{border-color:var(--red);}
+.calc-unit{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--muted);}
+.calc-result{font-family:'DM Mono',monospace;font-size:.72rem;margin-top:6px;min-height:18px;}
+.calc-result.good{color:var(--brand1);}
+.calc-result.bad{color:var(--red);}
+.btn-check{margin-top:4px;padding:13px 24px;background:transparent;border:1.5px solid var(--brand2);border-radius:8px;color:var(--brand2);font-family:'Open Sans',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.btn-check:hover:not(:disabled){background:rgba(136,156,231,.08);}
+.btn-check:disabled{opacity:.3;cursor:not-allowed;}
+
+/* budget */
+.budget-total{background:var(--card);border:1px solid var(--brand1);border-radius:12px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;}
+.budget-total-lbl{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
+.budget-remaining{font-family:'DM Mono',monospace;font-size:1.4rem;font-weight:700;color:var(--brand1);transition:color .3s;}
+.budget-remaining.over{color:var(--red);}
+.budget-channels{display:grid;gap:12px;margin-bottom:18px;}
+.budget-ch{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:16px 18px;}
+.budget-ch-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.budget-ch-name{font-weight:700;font-size:.92rem;display:flex;align-items:center;gap:8px;}
+.budget-ch-icon{font-size:1.1rem;}
+.budget-ch-stats{font-family:'DM Mono',monospace;font-size:.67rem;color:var(--muted);}
+.budget-ch-val{font-family:'DM Mono',monospace;font-size:1rem;font-weight:700;color:var(--brand1);}
+.budget-slider{width:100%;appearance:none;height:5px;border-radius:3px;background:var(--border);outline:none;cursor:pointer;margin-bottom:8px;}
+.budget-slider::-webkit-slider-thumb{appearance:none;width:18px;height:18px;border-radius:50%;background:var(--brand1);cursor:pointer;box-shadow:0 0 8px rgba(143,195,46,.4);}
+.budget-bar-track{height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+.budget-bar-fill{height:100%;background:linear-gradient(90deg,var(--brand1),var(--brand2));border-radius:2px;transition:width .3s;}
+.diminish-warning{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--warn);margin-top:5px;display:none;}
+.diminish-warning.show{display:block;}
+
+/* crisis */
+.crisis-opts{display:grid;gap:14px;}
+.crisis-btn{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:18px 20px;text-align:left;cursor:pointer;transition:all .18s;color:var(--text);font-family:'Open Sans',sans-serif;width:100%;}
+.crisis-btn:hover:not(.locked){border-color:var(--brand2);transform:translateY(-1px);}
+.crisis-btn.sel-best{border-color:var(--brand1);background:rgba(143,195,46,.06);}
+.crisis-btn.sel-ok{border-color:var(--warn);background:rgba(255,149,0,.05);}
+.crisis-btn.sel-bad{border-color:var(--red);background:rgba(255,77,109,.05);}
+.crisis-btn.locked{cursor:default;opacity:.45;}
+.crisis-btn-title{font-size:.95rem;font-weight:800;margin-bottom:4px;}
+.crisis-btn-desc{font-size:.82rem;color:var(--muted);line-height:1.55;}
+.crisis-impact{font-family:'DM Mono',monospace;font-size:.68rem;margin-top:8px;padding:4px 10px;border-radius:5px;display:inline-block;}
+.impact-high{background:rgba(143,195,46,.1);color:var(--brand1);}
+.impact-med{background:rgba(255,149,0,.1);color:var(--warn);}
+.impact-low{background:rgba(255,77,109,.1);color:var(--red);}
+
+/* bottom bar */
+.bbar{position:fixed;bottom:0;left:0;right:0;background:rgba(8,8,8,.97);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:12px 22px;display:none;align-items:center;justify-content:space-between;gap:12px;z-index:200;}
+.bbar-status{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--muted);flex:1;}
+.btn-next{padding:14px 28px;background:linear-gradient(135deg,var(--brand1),var(--brand2));color:#000;border:none;border-radius:9px;font-family:'Open Sans',sans-serif;font-size:.95rem;font-weight:800;cursor:pointer;transition:all .2s;opacity:.35;pointer-events:none;}
+.btn-next.ready{opacity:1;pointer-events:auto;}
+.btn-next.ready:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(143,195,46,.3);}
+
+/* toast */
+.toast{position:fixed;top:80px;right:24px;padding:11px 16px;border-radius:9px;font-family:'DM Mono',monospace;font-size:.78rem;font-weight:700;z-index:999;transform:translateX(130%);transition:transform .3s ease;pointer-events:none;}
+.toast.show{transform:translateX(0);}
+.toast.good{background:rgba(143,195,46,.12);border:1px solid var(--brand1);color:var(--brand1);}
+.toast.bad{background:rgba(255,77,109,.12);border:1px solid var(--red);color:var(--red);}
+
+/* results */
+.res-eyebrow{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.res-title{font-size:clamp(2rem,5vw,3rem);font-weight:800;letter-spacing:-1.2px;margin-bottom:6px;}
+.res-title span{color:var(--brand1);}
+.res-team{font-family:'DM Mono',monospace;font-size:.85rem;color:var(--muted);margin-bottom:28px;}
+.spi-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px 24px;text-align:center;max-width:400px;width:100%;margin-bottom:28px;}
+.spi-lbl{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.spi-big{font-size:5rem;font-weight:800;letter-spacing:-3px;line-height:1;color:var(--brand1);}
+.spi-max{font-family:'DM Mono',monospace;font-size:.75rem;color:var(--muted);margin-top:4px;}
+.perf-band{display:inline-block;margin-top:14px;padding:7px 20px;border-radius:100px;font-family:'DM Mono',monospace;font-size:.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+.band-excellent{background:rgba(143,195,46,.12);border:1px solid var(--brand1);color:var(--brand1);}
+.band-strong{background:rgba(136,156,231,.12);border:1px solid var(--brand2);color:var(--brand2);}
+.band-developing{background:rgba(255,149,0,.12);border:1px solid var(--warn);color:var(--warn);}
+.score-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:640px;width:100%;margin-bottom:28px;}
+@media(max-width:500px){.score-grid{grid-template-columns:1fr;}}
+.score-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;}
+.sc-phase{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.sc-title{font-weight:800;font-size:.9rem;margin-bottom:10px;line-height:1.3;}
+.sc-bar-track{height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin-bottom:6px;}
+.sc-bar-fill{height:100%;border-radius:3px;}
+.sc-score{font-family:'DM Mono',monospace;font-size:.9rem;font-weight:700;}
+.sc-note{font-size:.76rem;color:var(--muted);margin-top:5px;line-height:1.5;}
+.feedback-section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 24px;max-width:640px;width:100%;margin-bottom:24px;}
+.feedback-hd{font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--brand2);margin-bottom:12px;}
+.feedback-text{font-size:.9rem;color:#bbd;line-height:1.8;}
+.feedback-text strong{color:var(--text);}
+.decision-log{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 24px;max-width:640px;width:100%;margin-bottom:24px;}
+.dl-hd{font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:16px;}
+.dl-phase-title{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--brand1);margin-bottom:8px;margin-top:14px;}
+.dl-item{display:flex;align-items:flex-start;gap:10px;font-size:.82rem;color:var(--muted);line-height:1.55;margin-bottom:5px;}
+.btn-pdf{max-width:640px;width:100%;padding:17px;background:var(--card);border:1.5px solid var(--brand1);border-radius:10px;color:var(--brand1);font-family:'Open Sans',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px;}
+.btn-pdf:hover{background:rgba(143,195,46,.06);box-shadow:0 0 24px rgba(143,195,46,.15);}
+.btn-restart{max-width:640px;width:100%;padding:17px;background:linear-gradient(135deg,var(--brand1),var(--brand2));color:#000;border:none;border-radius:10px;font-family:'Open Sans',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;transition:all .2s;}
+.btn-restart:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(143,195,46,.25);}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeUp .35s ease both;}
+
+/* Q2 reveal */
+.q2-locked{opacity:.4;pointer-events:none;transition:opacity .4s ease;}
+.q2-unlocked{opacity:1;pointer-events:auto;transition:opacity .4s ease;}
+.q2-divider{display:flex;align-items:center;gap:12px;margin:8px 0 24px;}
+.q2-divider::before,.q2-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.q2-divider-label{font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);white-space:nowrap;}
+
+/* Hint toggle */
+.hint-toggle{display:block;width:100%;margin-top:20px;padding:12px 16px;background:transparent;border:1px dashed rgba(255,149,0,.4);border-radius:9px;color:var(--warn);font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.5px;cursor:pointer;text-align:left;transition:all .2s;}
+.hint-toggle:hover{background:rgba(255,149,0,.05);border-color:var(--warn);}
+.hint-toggle.hint-used{border-color:var(--red);color:var(--red);background:rgba(255,77,109,.05);}
+.hint-warning{background:rgba(255,77,109,.08);border:1px solid rgba(255,77,109,.25);border-radius:9px;padding:10px 14px;font-family:'DM Mono',monospace;font-size:.72rem;color:var(--red);margin-bottom:4px;}
+.hint-formula{background:rgba(136,156,231,.07);border:1px solid rgba(136,156,231,.2);border-radius:9px;padding:12px 16px;font-family:'DM Mono',monospace;font-size:.82rem;color:var(--brand2);margin-top:8px;letter-spacing:.3px;}
+
+/* Phase 3 brief */
+.p3-brief{background:rgba(136,156,231,.06);border:1px solid rgba(136,156,231,.2);border-radius:11px;padding:13px 15px;margin-bottom:18px;}
+.p3-brief-row{display:flex;align-items:flex-start;gap:10px;font-size:.82rem;color:var(--muted);line-height:1.5;margin-bottom:8px;}
+.p3-brief-row:last-child{margin-bottom:0;}
+.p3-brief-icon{font-size:.9rem;flex-shrink:0;margin-top:1px;}
+.budget-ch-right{text-align:right;}
+.budget-optimal{font-family:'DM Mono',monospace;font-size:.62rem;color:var(--brand1);margin-top:2px;}
+.budget-sub-label{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted);margin-top:2px;}
+</style>
+</head>
+<body>
+
+<!-- ══ HOME ══ -->
+<div id="s-home" class="screen">
+  <div class="home-logo">
+    <div class="dx-logo dx-logo-lg">
+      <div class="dx-logo-badge">
+        <svg viewBox="0 0 18 18" fill="none"><text x="1" y="14" font-family="'Open Sans',sans-serif" font-weight="800" font-size="13" fill="#000">dx</text></svg>
+      </div>
+      <div class="dx-logo-stack">
+        <div class="dx-logo-text">Digital<span>Xperience</span>.ai</div>
+        <div class="dx-logo-sub">Analytics Academy</div>
+      </div>
+    </div>
+  </div>
+  <div class="home-tagline">Data Analyst Decision Simulator</div>
+  <h1 class="home-h">Think like a<br><em>Data Analyst</em></h1>
+  <p class="home-sub">Four real-world analytics phases. Diagnose performance problems, calculate efficiency metrics, allocate marketing budget, and manage a live brand crisis — all scored against the <strong>Analytics Score (AS)</strong>.</p>
+  <div class="reg-form">
+    <input type="text" class="reg-in" id="nameIn" placeholder="Your name or team name" maxlength="40" autocomplete="off">
+    <button class="btn-launch" onclick="startGame()">Launch Simulation &rarr;</button>
+  </div>
+  <div class="home-meta">
+    <div class="meta-item"><div class="meta-dot" style="background:var(--brand1)"></div>4 Phases</div>
+    <div class="meta-item"><div class="meta-dot" style="background:var(--brand2)"></div>Real Datasets</div>
+    <div class="meta-item"><div class="meta-dot" style="background:var(--brand1)"></div>AS Max 200</div>
+    <div class="meta-item"><div class="meta-dot" style="background:var(--brand2)"></div>25&ndash;30 Minutes</div>
+  </div>
+  <div class="footer">&copy; 2026 DigitalXperience.ai &mdash; All rights reserved. Unauthorised copying or reproduction prohibited.</div>
+</div>
+
+<!-- ══ GAME ══ -->
+<div id="s-game" class="screen">
+  <div class="hdr">
+    <div class="dx-logo dx-logo-sm">
+      <div class="dx-logo-badge">
+        <svg viewBox="0 0 18 18" fill="none"><text x="1" y="14" font-family="'Open Sans',sans-serif" font-weight="800" font-size="13" fill="#000">dx</text></svg>
+      </div>
+      <div class="dx-logo-stack">
+        <div class="dx-logo-text">Digital<span>Xperience</span>.ai</div>
+      </div>
+    </div>
+    <div class="prog-bar">
+      <div class="prog-step active" id="ps1"></div>
+      <div class="prog-step" id="ps2"></div>
+      <div class="prog-step" id="ps3"></div>
+      <div class="prog-step" id="ps4"></div>
+    </div>
+    <div class="hdr-right">
+      <div class="team-chip" id="teamChip">—</div>
+      <div class="spi-pill">AS&nbsp;<span class="spi-val" id="scoreDisplay">0</span></div>
+      <div class="timer-outer">
+        <div class="timer-label">Time Left</div>
+        <div class="timer-wrap" id="timerWrap">
+          <svg width="58" height="58" viewBox="0 0 58 58">
+            <circle class="timer-bg" cx="29" cy="29" r="26"/>
+            <circle class="t-ring" id="tRing" cx="29" cy="29" r="26"/>
+          </svg>
+          <div class="t-inner"><div class="t-mins" id="tMins">6:00</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="meters-bar">
+    <div class="meter-item"><div class="meter-lbl">Traffic Growth</div><div class="meter-track"><div class="meter-fill fill-traf" id="m-traf" style="width:65%"></div></div><div class="meter-val" id="mv-traf">65</div></div>
+    <div class="meter-item"><div class="meter-lbl">Engagement Quality</div><div class="meter-track"><div class="meter-fill fill-eng" id="m-eng" style="width:50%"></div></div><div class="meter-val" id="mv-eng">50</div></div>
+    <div class="meter-item"><div class="meter-lbl">Conversion Efficiency</div><div class="meter-track"><div class="meter-fill fill-conv" id="m-conv" style="width:40%"></div></div><div class="meter-val" id="mv-conv">40</div></div>
+    <div class="meter-item"><div class="meter-lbl">Marketing ROI</div><div class="meter-track"><div class="meter-fill fill-roi" id="m-roi" style="width:55%"></div></div><div class="meter-val" id="mv-roi">55</div></div>
+  </div>
+  <div class="game-body" id="gameBody"></div>
+  <div class="bbar" id="bbar">
+    <div class="bbar-status" id="bbarStatus">Make your selections to continue.</div>
+    <button class="btn-next" id="btnNext" onclick="nextPhase()">Next Phase &rarr;</button>
+  </div>
+</div>
+
+<!-- ══ RESULTS ══ -->
+<div id="s-results" class="screen">
+  <div class="res-eyebrow">Simulation Complete</div>
+  <h2 class="res-title">Data <span>Analyst</span> Score</h2>
+  <p class="res-team" id="resTeam"></p>
+  <div class="spi-card">
+    <div class="spi-lbl">Analytics Score (AS)</div>
+    <div class="spi-big" id="resBig">0</div>
+    <div class="spi-max">/ 200 maximum</div>
+    <div class="perf-band" id="resBand">Calculating&hellip;</div>
+  </div>
+  <div class="score-grid" id="scoreGrid"></div>
+  <div class="feedback-section">
+    <div class="feedback-hd">Analyst Feedback</div>
+    <div class="feedback-text" id="analysisFb"></div>
+  </div>
+  <div class="decision-log" id="decisionLog"></div>
+  <button class="btn-pdf" onclick="exportPDF()">&#128438; Download My Strategy (PDF)</button>
+  <button class="btn-restart" onclick="location.reload()">Play Again &rarr;</button>
+  <div class="footer">&copy; 2026 DigitalXperience.ai &mdash; All rights reserved. Unauthorised copying or reproduction prohibited.</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+
+/* ══ STATE ══ */
+var G={
+  name:'', score:0, phase:1, timerSec:360, timerInt:null,
+  phaseScores:{1:0,2:0,3:0,4:0},
+  decisions:{1:[],2:[],3:[],4:[]},
+  meters:{traf:65,eng:50,conv:40,roi:55},
+  p1q1done:false, p1q2done:false,
+  p2calcsDone:false, p2bestDone:false, p2hintPenalty:false,
+  p3submitted:false, p4done:false,
+  p3budget:{seo:1000,google:2000,meta:2000,email:1000,influencer:2000,display:1000}
+};
+
+/* ══ SCREEN ══ */
+function show(id){
+  ['s-home','s-game','s-results'].forEach(function(sid){document.getElementById(sid).style.display='none';});
+  document.getElementById(id).style.display=(id==='s-game'?'block':'flex');
+  document.getElementById('bbar').style.display=(id==='s-game'?'flex':'none');
+  window.scrollTo(0,0);
+}
+show('s-home');
+
+/* ══ START ══ */
+function startGame(){
+  var n=document.getElementById('nameIn').value.trim();
+  if(!n){document.getElementById('nameIn').style.borderColor='var(--red)';return;}
+  G.name=n;
+  document.getElementById('teamChip').textContent=n.length>12?n.slice(0,12)+'…':n;
+  show('s-game');
+  renderPhase(1);
+  startTimer();
+}
+
+/* ══ TIMER ══ */
+function startTimer(){
+  G.timerSec=360;
+  clearInterval(G.timerInt);
+  tickTimer();
+  G.timerInt=setInterval(tickTimer,1000);
+}
+function tickTimer(){
+  if(G.timerSec>0) G.timerSec--;
+  var m=Math.floor(G.timerSec/60), s=G.timerSec%60;
+  document.getElementById('tMins').textContent=m+':'+(s<10?'0':'')+s;
+  document.getElementById('tRing').style.strokeDashoffset=163*(1-G.timerSec/360);
+  if(G.timerSec<=60) document.getElementById('timerWrap').classList.add('timer-urgent');
+  else document.getElementById('timerWrap').classList.remove('timer-urgent');
+  if(G.timerSec===0){clearInterval(G.timerInt);showToast("Time's up — moving on…",'bad');setTimeout(nextPhase,1500);}
+}
+
+/* ══ PROGRESS ══ */
+function updateProgress(ph){
+  for(var i=1;i<=4;i++){
+    var e=document.getElementById('ps'+i);
+    e.className='prog-step'+(i<ph?' done':i===ph?' active':'');
+  }
+}
+
+/* ══ SCORE ══ */
+function addScore(pts){
+  G.score+=pts; G.phaseScores[G.phase]+=pts;
+  var e=document.getElementById('scoreDisplay');
+  e.textContent=G.score;
+  e.classList.remove('score-bump'); void e.offsetWidth; e.classList.add('score-bump');
+}
+function setMeter(id,val){
+  val=Math.max(0,Math.min(100,Math.round(val)));
+  G.meters[id]=val;
+  document.getElementById('m-'+id).style.width=val+'%';
+  document.getElementById('mv-'+id).textContent=val;
+}
+
+/* ══ TOAST ══ */
+function showToast(msg,type){
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast '+type;
+  setTimeout(function(){t.classList.add('show');},10);
+  setTimeout(function(){t.classList.remove('show');},2800);
+}
+
+/* ══ NAV ══ */
+function setReady(ready,hint){
+  var btn=document.getElementById('btnNext');
+  btn.className='btn-next'+(ready?' ready':'');
+  document.getElementById('bbarStatus').textContent=hint||(ready?'Ready — continue to the next phase.':'Complete all tasks to continue.');
+}
+function nextPhase(){
+  if(!document.getElementById('btnNext').classList.contains('ready')) return;
+  clearInterval(G.timerInt);
+  G.phase++;
+  if(G.phase>4){showResults();return;}
+  document.getElementById('btnNext').textContent='Next Phase \u2192';
+  startTimer();
+  renderPhase(G.phase);
+}
+
+/* ══ RENDER ══ */
+function renderPhase(ph){
+  updateProgress(ph); setReady(false);
+  var el=document.getElementById('gameBody');
+  el.innerHTML='';
+  if(ph===1) renderPhase1(el);
+  else if(ph===2) renderPhase2(el);
+  else if(ph===3) renderPhase3(el);
+  else renderPhase4(el);
+  window.scrollTo(0,0);
+  el.classList.remove('fade-in'); void el.offsetWidth; el.classList.add('fade-in');
+}
+
+/* ══ helper: option button ══ */
+function makeOpt(letter,text,cb){
+  return '<button class="sel-btn" onclick="'+cb+'"><div class="s-opt-letter">'+letter+'</div><div class="s-opt-title">'+text+'</div></button>';
+}
+function lockGrid(gridId){
+  document.querySelectorAll('#'+gridId+' .sel-btn').forEach(function(b){b.classList.add('locked');});
+}
+function markCorrect(gridId,letter){
+  document.querySelectorAll('#'+gridId+' .sel-btn').forEach(function(b){
+    if(b.querySelector('.s-opt-letter').textContent===letter) b.classList.add('correct');
+  });
+}
+
+/* ══════════════ PHASE 1 ══════════════ */
+
+function shuffle(arr){
+  var a=arr.slice(),i,j,t;
+  do {
+    for(i=a.length-1;i>0;i--){j=Math.floor(Math.random()*(i+1));t=a[i];a[i]=a[j];a[j]=t;}
+  } while(a[0].key==='correct');
+  return a;
+}
+
+var P1Q1_CORRECT='';
+var P1Q2_CORRECT='';
+
+function renderPhase1(el){
+  var letters=['A','B','C','D'];
+  var q1opts=shuffle([
+    {key:'correct',text:'Broad targeting attracted low-intent traffic'},
+    {key:'B',      text:'Website server failure causing slow load times'},
+    {key:'C',      text:'Product pricing error deterring buyers'},
+    {key:'D',      text:'Email deliverability problem reducing engagement'}
+  ]);
+  var q2opts=shuffle([
+    {key:'correct',text:'Refine audience targeting to higher-intent segments'},
+    {key:'B',      text:'Increase advertising budget to drive more traffic'},
+    {key:'C',      text:'Redesign the landing page experience'},
+    {key:'D',      text:'Pause all ad campaigns immediately'}
+  ]);
+  q1opts.forEach(function(o,i){if(o.key==='correct') P1Q1_CORRECT=letters[i];});
+  q2opts.forEach(function(o,i){if(o.key==='correct') P1Q2_CORRECT=letters[i];});
+
+  el.innerHTML=
+    '<div class="phase-pill ph1">&#128202; Phase 1 &mdash; Diagnose the Analytics Problem</div>'+
+    '<h2 class="phase-h">Traffic is up. Revenue is down. Why?</h2>'+
+    '<p class="phase-sub">You are the digital analyst for an ecommerce brand. Review the dashboard data and identify the most likely cause of the performance drop.</p>'+
+    '<div class="dataset-card">'+
+      '<div class="dataset-title">// Analytics Dashboard &mdash; Last 30 Days</div>'+
+      '<table class="data-table"><thead><tr><th>Metric</th><th>Previous</th><th>Current</th><th>Change</th></tr></thead><tbody>'+
+        '<tr><td>Sessions</td><td class="val">80,000</td><td class="val">120,000</td><td class="up-val">&uarr; +50%</td></tr>'+
+        '<tr><td>Bounce Rate</td><td class="val">38%</td><td class="val">72%</td><td class="down-val">&uarr; +89%</td></tr>'+
+        '<tr><td>Conversion Rate</td><td class="val">2.4%</td><td class="val">0.9%</td><td class="down-val">&darr; &minus;62.5%</td></tr>'+
+        '<tr><td>Revenue</td><td class="val">&pound;120,000</td><td class="val">&pound;95,000</td><td class="down-val">&darr; &minus;20.8%</td></tr>'+
+      '</tbody></table>'+
+    '</div>'+
+    '<div class="q-block">'+
+      '<div class="q-label">Question 1 of 2 &mdash; Root Cause Analysis</div>'+
+      '<div class="q-text">What is the most likely explanation for this pattern of metrics?</div>'+
+      '<div class="sel-grid" id="g1q1">'+
+        q1opts.map(function(o,i){var l=letters[i];return makeOpt(l,o.text,"p1q1(this,'"+l+"')");}).join('')+
+      '</div>'+
+      '<div class="feedback-box" id="fb1q1"></div>'+
+    '</div>'+
+    '<div id="wrap1q2" style="display:none;">'+
+      '<div class="q2-divider"><span class="q2-divider-label">Question 2 of 2</span></div>'+
+      '<div class="q-block">'+
+        '<div class="q-label">Recommended Action</div>'+
+        '<div class="q-text">Given your diagnosis, what should be the immediate recommended action?</div>'+
+        '<div class="sel-grid" id="g1q2">'+
+          q2opts.map(function(o,i){var l=letters[i];return makeOpt(l,o.text,"p1q2(this,'"+l+"')");}).join('')+
+        '</div>'+
+        '<div class="feedback-box" id="fb1q2"></div>'+
+      '</div>'+
+    '</div>';
+}
+
+function revealQ2(){
+  var w=document.getElementById('wrap1q2');
+  if(!w) return;
+  w.style.display='block';
+  setTimeout(function(){w.scrollIntoView({behavior:'smooth',block:'nearest'});},50);
+}
+
+function p1q1(btn,choice){
+  if(G.p1q1done) return; G.p1q1done=true;
+  lockGrid('g1q1');
+  var correct=choice===P1Q1_CORRECT;
+  btn.classList.add(correct?'correct':'wrong');
+  if(!correct) markCorrect('g1q1',P1Q1_CORRECT);
+  var fb=document.getElementById('fb1q1');
+  if(correct){
+    addScore(20); setMeter('traf',55); setMeter('eng',38);
+    fb.className='feedback-box good on';
+    fb.innerHTML='&#10003; +20 pts &mdash; Correct. High traffic + high bounce rate + collapsing conversion rate signals low-intent visitors from broad targeting. The traffic increase brought users unlikely to purchase.';
+    showToast('+20 points!','good');
+    G.decisions[1].push({q:'Root cause',answer:'Broad targeting \u2014 correct',correct:true});
+  } else {
+    fb.className='feedback-box bad on';
+    fb.innerHTML='&#10007; Incorrect. The pattern \u2014 traffic up, bounce rate up, conversion down \u2014 is the hallmark of low-intent traffic from broad targeting. Server failures, pricing errors, and email issues do not explain a simultaneous traffic surge.';
+    showToast('Incorrect \u2014 study the data patterns','bad');
+    G.decisions[1].push({q:'Root cause',answer:'Incorrect',correct:false});
+  }
+  revealQ2();
+}
+
+function p1q2(btn,choice){
+  if(G.p1q2done) return; G.p1q2done=true;
+  lockGrid('g1q2');
+  var correct=choice===P1Q2_CORRECT;
+  btn.classList.add(correct?'correct':'wrong');
+  if(!correct) markCorrect('g1q2',P1Q2_CORRECT);
+  var fb=document.getElementById('fb1q2');
+  if(correct){
+    addScore(20); setMeter('conv',52); setMeter('roi',62);
+    fb.className='feedback-box good on';
+    fb.innerHTML='&#10003; +20 pts &mdash; Correct. Audience refinement directly addresses the root cause. Tightening targeting criteria reduces wasted spend and recovers conversion efficiency.';
+    showToast('+20 points!','good');
+    G.decisions[1].push({q:'Action',answer:'Refine targeting \u2014 correct',correct:true});
+  } else {
+    fb.className='feedback-box bad on';
+    fb.innerHTML='&#10007; Incorrect. Increasing spend amplifies the low-quality traffic problem. Redesigning the page is secondary. Pausing all campaigns destroys revenue momentum. Refining targeting addresses the root cause directly.';
+    showToast('Incorrect!','bad');
+    G.decisions[1].push({q:'Action',answer:'Incorrect',correct:false});
+  }
+  setReady(true,'Phase 1 complete \u2014 move to calculations.');
+}
+
+/* ══════════════ PHASE 2 ══════════════ */
+var P2=[{n:'A',cl:4000,cv:40,co:2000},{n:'B',cl:2000,cv:50,co:3000},{n:'C',cl:1500,cv:30,co:900}];
+function crOf(c){return (c.cv/c.cl*100).toFixed(2);}
+function cpaOf(c){return (c.co/c.cv).toFixed(2);}
+var hintUsed=false;
+
+function renderPhase2(el){
+  hintUsed=false;
+  var rows=P2.map(function(c){
+    return '<div class="calc-row">'+
+      '<div class="calc-row-top"><div class="calc-lbl">Campaign '+c.n+'</div><div class="calc-formula">'+c.cl.toLocaleString()+' clicks · '+c.cv+' conv · £'+c.co.toLocaleString()+'</div></div>'+
+      '<div class="calc-inputs"><span class="calc-unit">CR =</span><input class="calc-in" id="cr'+c.n+'" type="number" step="0.01" min="0" placeholder="e.g. 1.00"><span class="calc-unit">%</span>'+
+      '<span class="calc-unit" style="margin-left:10px;">CPA = £</span><input class="calc-in" id="cpa'+c.n+'" type="number" step="0.01" min="0" placeholder="e.g. 50.00"></div>'+
+      '<div class="calc-result" id="res'+c.n+'"></div>'+
+    '</div>';
+  }).join('');
+  el.innerHTML=
+    '<div class="phase-pill ph2">&#129518; Phase 2 — Calculation Challenge</div>'+
+    '<h2 class="phase-h">Which campaign is most efficient?</h2>'+
+    '<p class="phase-sub">Calculate the Conversion Rate and CPA for each campaign, then decide which should receive the highest budget increase.</p>'+
+    '<div class="dataset-card">'+
+      '<div class="dataset-title">// Campaign Performance Data</div>'+
+      '<table class="data-table"><thead><tr><th>Campaign</th><th>Clicks</th><th>Conversions</th><th>Cost (£)</th></tr></thead><tbody>'+
+        P2.map(function(c){return '<tr><td><strong>'+c.n+'</strong></td><td class="val">'+c.cl.toLocaleString()+'</td><td class="val">'+c.cv+'</td><td class="val">£'+c.co.toLocaleString()+'</td></tr>';}).join('')+
+      '</tbody></table>'+
+    '</div>'+
+    '<div class="q-block">'+
+      '<div class="q-label">Task 1 — Calculate Metrics</div>'+
+      '<div class="calc-grid">'+rows+'</div>'+
+      '<button class="hint-toggle" id="hintToggle" onclick="toggleCalcHint()">'+
+        '&#9888; Show formulas — costs 50% of available points'+
+      '</button>'+
+      '<div id="calcHint" style="display:none;">'+
+        '<div class="hint-warning">&#9888; Formula hint active — max score for this task is now 10 pts</div>'+
+        '<div class="hint-formula">CR = (Conversions ÷ Clicks) × 100 &nbsp;&nbsp;|   CPA = Cost ÷ Conversions</div>'+
+      '</div>'+
+      '<button class="btn-check" id="btnCalc" onclick="checkCalcs()" style="margin-top:14px;">Check My Calculations</button>'+
+      '<div class="feedback-box" id="fb2calc"></div>'+
+    '</div>'+
+    '<div id="wrap2best" style="display:none;">'+
+      '<div class="q2-divider"><span class="q2-divider-label">Task 2 — Strategic Decision</span></div>'+
+      '<div class="q-block">'+
+        '<div class="q-text">Based on your calculations, which campaign should receive the highest budget increase?</div>'+
+        '<div class="sel-grid" id="g2best">'+
+          makeOpt('A','Campaign A — highest total click volume',"p2best(this,'A')")+
+          makeOpt('B','Campaign B — most total conversions',"p2best(this,'B')")+
+          makeOpt('C','Campaign C — best conversion rate & lowest CPA',"p2best(this,'C')")+
+          makeOpt('D','Split equally — diversify risk',"p2best(this,'D')")+
+        '</div>'+
+        '<div class="feedback-box" id="fb2best"></div>'+
+      '</div>'+
+    '</div>';
+}
+
+function toggleCalcHint(){
+  if(G.p2calcsDone) return;
+  var hint=document.getElementById('calcHint');
+  var toggle=document.getElementById('hintToggle');
+  if(hint.style.display==='none'){
+    if(!hintUsed){
+      hintUsed=true;
+      G.p2hintPenalty=true;
+      toggle.classList.add('hint-used');
+      showToast('Formulas unlocked — 50% point penalty applied','bad');
+    }
+    hint.style.display='block';
+    toggle.textContent='▲ Hide formulas (50% penalty active)';
+  } else {
+    hint.style.display='none';
+    toggle.textContent='⚠ Show formulas — costs 50% of available points';
+  }
+}
+
+function checkCalcs(){
+  if(G.p2calcsDone) return;
+  var ok=true;
+  P2.forEach(function(c){if(!document.getElementById('cr'+c.n).value||!document.getElementById('cpa'+c.n).value) ok=false;});
+  if(!ok){showToast('Fill in all fields first','bad');return;}
+  G.p2calcsDone=true;
+  document.getElementById('btnCalc').disabled=true;
+  document.getElementById('hintToggle').style.display='none';
+  document.getElementById('calcHint').style.display='none';
+  var correct=0;
+  P2.forEach(function(c){
+    var cv=parseFloat(document.getElementById('cr'+c.n).value);
+    var pv=parseFloat(document.getElementById('cpa'+c.n).value);
+    var okCR=Math.abs(cv-parseFloat(crOf(c)))<=0.06;
+    var okCPA=Math.abs(pv-parseFloat(cpaOf(c)))<=0.6;
+    document.getElementById('cr'+c.n).classList.add(okCR?'ok':'err');
+    document.getElementById('cpa'+c.n).classList.add(okCPA?'ok':'err');
+    var res=document.getElementById('res'+c.n);
+    if(okCR&&okCPA){correct++;res.className='calc-result good';res.textContent='✓ CR='+crOf(c)+'% · CPA=£'+cpaOf(c);}
+    else{res.className='calc-result bad';res.textContent='Correct: CR='+crOf(c)+'% · CPA=£'+cpaOf(c);}
+  });
+  var pts=G.p2hintPenalty?Math.round(correct*10*0.5):correct*10;
+  addScore(pts);
+  setMeter('conv',60); setMeter('roi',68);
+  var fb=document.getElementById('fb2calc');
+  fb.className='feedback-box '+(correct>=2?'good':'bad')+' on';
+  fb.innerHTML=correct+'/3 correct (+'+pts+' pts'+(G.p2hintPenalty?' with hint penalty':'')+'). Key: C: CR=2.0%, CPA=£30 · B: CR=2.5%, CPA=£60 · A: CR=1.0%, CPA=£50';
+  G.decisions[2].push({q:'Calculations',answer:correct+'/3 correct',correct:correct>=2});
+  if(pts>0) showToast('+'+pts+' pts!','good');
+  setTimeout(function(){
+    var w=document.getElementById('wrap2best');
+    if(w){w.style.display='block';w.scrollIntoView({behavior:'smooth',block:'nearest'});}
+  },400);
+}
+
+function p2best(btn,choice){
+  if(G.p2bestDone) return; G.p2bestDone=true;
+  lockGrid('g2best');
+  var correct=choice==='C';
+  btn.classList.add(correct?'correct':'wrong');
+  if(!correct) markCorrect('g2best','C');
+  var fb=document.getElementById('fb2best');
+  var expl={
+    A:'Campaign A has only 1% CR and £50 CPA — high clicks but low efficiency.',
+    B:'Campaign B has the most conversions but at £60 CPA — the most expensive per acquisition.',
+    C:'Campaign C achieves 2% CR and only £30 CPA — the best on both efficiency metrics. Always scale the most cost-efficient campaign first.',
+    D:'Equal splitting ignores performance data. Data-driven allocation must weight towards higher-efficiency channels.'
+  };
+  var maxPts=20;
+  var pts=G.p2hintPenalty?Math.round(maxPts*0.5):maxPts;
+  if(correct){
+    addScore(pts); setMeter('roi',78);
+    fb.className='feedback-box good on';
+    fb.innerHTML='&#10003; +'+pts+' pts'+(G.p2hintPenalty?' (hint penalty applied)':'')+' — '+expl['C'];
+    showToast('+'+pts+' points!','good');
+    G.decisions[2].push({q:'Best campaign',answer:'C: Correct'+(G.p2hintPenalty?' (hint used)':''),correct:true});
+  } else {
+    fb.className='feedback-box bad on';
+    fb.innerHTML='&#10007; '+expl[choice]+' The correct answer was C.';
+    showToast('Incorrect!','bad');
+    G.decisions[2].push({q:'Best campaign',answer:choice+': Incorrect',correct:false});
+  }
+  setReady(true,'Phase 2 complete — allocate your budget.');
+}
+
+/* ══════════════ PHASE 3 ══════════════ */
+var CHS=[
+  {id:'seo',        name:'SEO',                 icon:'&#128269;', ctr:'3–5%',   cr:'2.8%',  cpa:'£35', max:3500, sw:[1500,2500]},
+  {id:'google',     name:'Google Ads',           icon:'&#127919;', ctr:'2–4%',   cr:'3.2%',  cpa:'£42', max:4000, sw:[2000,3500]},
+  {id:'meta',       name:'Meta Ads',             icon:'&#128241;', ctr:'1–3%',   cr:'1.8%',  cpa:'£55', max:3500, sw:[1500,3000]},
+  {id:'email',      name:'Email Marketing',      icon:'&#128140;', ctr:'18–22%', cr:'4.1%',  cpa:'£18', max:2500, sw:[1000,2000]},
+  {id:'influencer', name:'Influencer Marketing', icon:'&#11088;',  ctr:'4–8%',   cr:'2.1%',  cpa:'£70', max:2500, sw:[500, 2000]},
+  {id:'display',    name:'Display Advertising',  icon:'&#128444;', ctr:'0.5%',        cr:'0.8%',  cpa:'£90', max:2000, sw:[500, 1500]}
+];
+var TOTAL=10000;
+
+function p3ContextCopy(){
+  // Pull what the student actually decided in phases 1 and 2
+  var p1decisions=G.decisions[1]||[];
+  var p2decisions=G.decisions[2]||[];
+  var p1correct=p1decisions.length>0 && p1decisions[0].correct;
+  // Find the campaign answer (decisions[2] index 1 is best campaign choice, index 0 is calculations)
+  var p2campaignDec=p2decisions.filter(function(d){return d.q==='Best campaign';})[0];
+  var p2correct=p2campaignDec && p2campaignDec.correct;
+
+  var p1line;
+  if(p1correct){
+    p1line='In Phase 1 you correctly diagnosed the problem: broad targeting was flooding the site with low-intent visitors, driving up bounce rate and collapsing conversions.';
+  } else {
+    p1line='In Phase 1 the data told a clear story: a traffic surge paired with a rising bounce rate and falling conversions points to low-intent visitors from broad targeting — not a technical or pricing issue.';
+  }
+
+  var p2line;
+  if(p2correct){
+    p2line='In Phase 2 you correctly identified Campaign C as the most efficient channel — 2% CR and only £30 CPA, outperforming A and B on both metrics.';
+  } else if(p2campaignDec){
+    var chosen=p2campaignDec.answer.charAt(0); // 'A', 'B', or 'D'
+    var why={
+      A:'Campaign A had the most clicks but a weak 1% CR and £50 CPA — volume without efficiency. Campaign C’s 2% CR and £30 CPA made it the right call.',
+      B:'Campaign B had the most conversions in total but at £60 CPA — the most expensive per acquisition. Campaign C’s £30 CPA made it the stronger choice.',
+      D:'Splitting equally ignores what the data shows. Campaign C’s 2% CR and £30 CPA make it the clear efficiency winner — it deserved the highest allocation.'
+    };
+    p2line='In Phase 2 you selected Campaign '+chosen+', but the most efficient channel was Campaign C. '+( why[chosen]||'');
+  } else {
+    p2line='The Phase 2 data showed Campaign C was the standout performer: 2% CR and £30 CPA beat both A and B on every efficiency metric.';
+  }
+
+  return p1line+' '+p2line+' Now apply that analytical thinking here — use the channel data below to redistribute the £10,000 budget and maximise marketing performance.';
+}
+
+function renderPhase3(el){
+  // Reset all budgets to zero so sliders start at 0
+  CHS.forEach(function(ch){ G.p3budget[ch.id]=0; });
+
+  el.innerHTML=
+    '<div class="phase-pill ph3">&#128176; Phase 3 — Budget Allocation Strategy</div>'+
+    '<h2 class="phase-h">Rebuild the budget strategy</h2>'+
+    '<p class="phase-sub">'+p3ContextCopy()+'</p>'+
+    '<div class="p3-brief">'+
+      '<div class="p3-brief-row">'+
+        '<span class="p3-brief-icon">&#127919;</span>'+
+        '<span><strong>Your task:</strong> Decide how to split the £10,000 budget across these six channels. Consider which channels reach high-intent audiences and which deliver the lowest CPA. A good analyst doesn’t spread spend equally — they weight it towards the channels most likely to convert.</span>'+
+      '</div>'+
+      '<div class="p3-brief-row">'+
+        '<span class="p3-brief-icon">&#9660;</span>'+
+        '<span><strong>Scoring:</strong> Each channel has an optimal range. Hit it = full points. Over-invest = diminishing returns. Spend all £10,000 (±£500) to unlock Submit.</span>'+
+      '</div>'+
+    '</div>'+
+    '<div class="budget-total">'+
+      '<div><div class="budget-total-lbl">Budget Remaining</div><div class="budget-sub-label">Allocate to ±£500</div></div>'+
+      '<div class="budget-remaining" id="budgRem">£10,000</div>'+
+    '</div>'+
+    '<div class="budget-channels">'+
+      CHS.map(function(ch){
+        return '<div class="budget-ch">'+
+          '<div class="budget-ch-top">'+
+            '<div class="budget-ch-name"><span class="budget-ch-icon">'+ch.icon+'</span>'+ch.name+'</div>'+
+            '<div class="budget-ch-right">'+
+              '<div class="budget-ch-val" id="v_'+ch.id+'">£0</div>'+
+              '<div class="budget-ch-stats">CTR '+ch.ctr+' · Conv '+ch.cr+' · CPA '+ch.cpa+'</div>'+
+              '<div class="budget-optimal">Optimal: £'+ch.sw[0].toLocaleString()+'–£'+ch.sw[1].toLocaleString()+'</div>'+
+            '</div>'+
+          '</div>'+
+          '<input type="range" class="budget-slider" id="sl_'+ch.id+'" min="0" max="'+ch.max+'" step="100" value="0" oninput="updateBudget()">'+
+          '<div class="budget-bar-track"><div class="budget-bar-fill" id="bar_'+ch.id+'" style="width:0%"></div></div>'+
+          '<div class="diminish-warning" id="dim_'+ch.id+'">&#9888; Over optimal range — diminishing returns</div>'+
+        '</div>';
+      }).join('')+
+    '</div>'+
+    '<button class="btn-check" id="btnBudget" onclick="submitBudget()" disabled>Submit Budget Allocation</button>'+
+    '<div class="feedback-box" id="fb3"></div>';
+  updateBudget();
+}
+function updateBudget(){
+  var total=0;
+  CHS.forEach(function(ch){
+    var v=parseInt(document.getElementById('sl_'+ch.id).value);
+    G.p3budget[ch.id]=v; total+=v;
+    document.getElementById('v_'+ch.id).textContent='£'+v.toLocaleString();
+    var pct=v/ch.max*100;
+    document.getElementById('bar_'+ch.id).style.width=pct+'%';
+    var dim=document.getElementById('dim_'+ch.id);
+    if(v>ch.sw[1]) dim.classList.add('show'); else dim.classList.remove('show');
+  });
+  var rem=TOTAL-total;
+  var re=document.getElementById('budgRem');
+  re.textContent=(rem>=0?'£':'-£')+Math.abs(rem).toLocaleString();
+  re.className='budget-remaining'+(rem<0?' over':'');
+  var btn=document.getElementById('btnBudget');
+  if(btn) btn.disabled=Math.abs(rem)>500;
+}
+
+function submitBudget(){
+  if(G.p3submitted) return; G.p3submitted=true;
+  document.getElementById('btnBudget').disabled=true;
+  var pts=0, over=[], under=[];
+  CHS.forEach(function(ch){
+    var v=G.p3budget[ch.id];
+    if(v>=ch.sw[0]&&v<=ch.sw[1]) pts+=8;
+    else if(v>ch.sw[1]) over.push(ch.name);
+    else if(v>0&&v<ch.sw[0]) under.push(ch.name);
+  });
+  pts=Math.min(pts,50); addScore(pts);
+  var good=pts>=30;
+  var fb=document.getElementById('fb3');
+  fb.className='feedback-box '+(good?'good':'bad')+' on';
+  var msg='+'+pts+'/50 pts. '+(good?'Strong allocation — good channel diversification. ':'Some channels are outside optimal ranges. ');
+  if(over.length) msg+=over.slice(0,2).join(', ')+' over-invested. ';
+  if(under.length) msg+=under.slice(0,2).join(', ')+' may be under-funded.';
+  fb.innerHTML=msg;
+  G.decisions[3].push({q:'Budget',answer:'SEO:£'+G.p3budget.seo+' Google:£'+G.p3budget.google+' Meta:£'+G.p3budget.meta+' Email:£'+G.p3budget.email,correct:good});
+  setMeter('traf',Math.min(80,G.meters.traf+10));
+  setMeter('roi',Math.min(85,G.meters.roi+(pts/5)));
+  setReady(true,'Phase 3 complete — manage the crisis.');
+}
+
+/* ══════════════ PHASE 4 ══════════════ */
+var CRISIS=[
+  {id:'retarget',title:'Shift budget to retargeting warm audiences',pts:30,cls:'sel-best',impact:'High',icls:'impact-high',
+   desc:'Reallocate 40% of social budget to retargeting audiences who previously engaged with the brand before the controversy.',
+   fb:'&#10003; +30 pts &mdash; Excellent. Retargeting warm audiences isolates spend from the controversy. These users already have brand familiarity, protecting conversion rates while the sentiment storm passes.'},
+  {id:'pause',title:'Pause influencer campaign &amp; shift to owned content',pts:20,cls:'sel-ok',impact:'Medium',icls:'impact-med',
+   desc:'Immediately halt the influencer campaign and pivot to authentic brand values content across owned channels.',
+   fb:'&#8651; +20 pts &mdash; Solid move. Pausing reduces further sentiment damage but doesn\'t actively recover trust. Combining with retargeting would be more effective.'},
+  {id:'counter',title:'Launch counter-narrative content campaign',pts:10,cls:'sel-ok',impact:'Medium',icls:'impact-med',
+   desc:'Publish authentic brand story content to directly address negative sentiment across owned channels.',
+   fb:'&#9888; +10 pts &mdash; Risky. Counter-narratives can amplify controversy if poorly executed. Better to retarget proven audiences first, then consider narrative management.'},
+  {id:'spend',title:'Double paid spend to flood positive content',pts:0,cls:'sel-bad',impact:'Low',icls:'impact-low',
+   desc:'Increase paid spend to push positive brand content and drown out negative sentiment algorithmically.',
+   fb:'&#10007; 0 pts &mdash; Incorrect. Increasing spend into a sentiment crisis amplifies the problem. Algorithms serve ads alongside negative commentary, wasting budget and damaging brand perception further.'}
+];
+
+function renderPhase4(el){
+  el.innerHTML=
+    '<div class="phase-pill ph4">&#128680; Phase 4 &mdash; Marketing Performance Crisis</div>'+
+    '<h2 class="phase-h">Influencer campaign triggers brand backlash</h2>'+
+    '<p class="phase-sub">A social media influencer campaign has caused a surge in negative audience sentiment. Conversion rates are collapsing. Choose your response strategy immediately.</p>'+
+    '<div class="dataset-card">'+
+      '<div class="dataset-title">// Crisis Dashboard &mdash; Live</div>'+
+      '<table class="data-table"><thead><tr><th>Metric</th><th>Before</th><th>After</th><th>Status</th></tr></thead><tbody>'+
+        '<tr><td>Sessions / week</td><td class="val">70,000</td><td class="val">90,000</td><td class="warn-val">&uarr; Traffic spike</td></tr>'+
+        '<tr><td>Conversion Rate</td><td class="val">2.2%</td><td class="val">0.7%</td><td class="down-val">&darr; &minus;68%</td></tr>'+
+        '<tr><td>Negative Sentiment</td><td class="val">12%</td><td class="val">48%</td><td class="down-val">&uarr; Crisis level</td></tr>'+
+        '<tr><td>Est. Weekly Revenue</td><td class="val">&pound;15,400</td><td class="val">&pound;6,300</td><td class="down-val">&darr; &minus;59%</td></tr>'+
+      '</tbody></table>'+
+    '</div>'+
+    '<div class="q-block">'+
+      '<div class="q-label">Crisis Response &mdash; Choose Your Strategy</div>'+
+      '<div class="q-text">Which response will best protect brand performance and accelerate recovery?</div>'+
+      '<div class="crisis-opts" id="crisisOpts">'+
+        shuffle(CRISIS).map(function(o){
+          return '<button class="crisis-btn" onclick="p4ans(this,\''+o.id+'\')">'+
+            '<div class="crisis-btn-title">'+o.title+'</div>'+
+            '<div class="crisis-btn-desc">'+o.desc+'</div>'+
+          '</button>';
+        }).join('')+
+      '</div>'+
+      '<div class="feedback-box" id="fb4"></div>'+
+    '</div>';
+}
+
+function p4ans(btn,id){
+  if(G.p4done) return; G.p4done=true;
+  var opt=CRISIS.filter(function(o){return o.id===id;})[0];
+  document.querySelectorAll('#crisisOpts .crisis-btn').forEach(function(b){b.classList.add('locked');});
+  btn.classList.add(opt.cls);
+  if(id!=='retarget'){
+    document.querySelectorAll('#crisisOpts .crisis-btn').forEach(function(b){
+      if(b.getAttribute('onclick').indexOf('retarget')!==-1) b.classList.add('sel-best');
+    });
+  }
+  addScore(opt.pts);
+  if(opt.pts>=20){setMeter('conv',55);setMeter('eng',55);}
+  else{setMeter('conv',25);setMeter('eng',30);}
+  var fb=document.getElementById('fb4');
+  fb.className='feedback-box '+(opt.pts>=20?'good':'bad')+' on';
+  fb.innerHTML=opt.fb;
+  G.decisions[4].push({q:'Crisis response',answer:opt.title.replace(/&amp;/g,'&').replace(/&mdash;/g,'—'),correct:opt.pts>=20});
+  showToast(opt.pts>0?'+'+opt.pts+' pts!':'0 pts — poor strategy',opt.pts>0?'good':'bad');
+  document.getElementById('btnNext').textContent='View Results \u2192';
+  setReady(true,'Simulation complete — view your results.');
+}
+
+/* ══════════════ RESULTS ══════════════ */
+function showResults(){
+  show('s-results');
+  var sc=Math.max(0,Math.min(200,G.score));
+  document.getElementById('resBig').textContent=sc;
+  document.getElementById('resTeam').textContent=G.name;
+  var band=sc>=160?'Excellent Analyst':sc>=110?'Strong Analyst':'Developing Analyst';
+  var bc=document.getElementById('resBand');
+  bc.textContent=band;
+  bc.className='perf-band '+(sc>=160?'band-excellent':sc>=110?'band-strong':'band-developing');
+
+  var phases=[
+    {num:1,title:'Diagnose the Problem',max:40,col:'var(--brand1)'},
+    {num:2,title:'Calculation Challenge',max:50,col:'var(--brand2)'},
+    {num:3,title:'Budget Allocation',max:50,col:'var(--warn)'},
+    {num:4,title:'Crisis Response',max:40,col:'var(--red)'}
+  ];
+  document.getElementById('scoreGrid').innerHTML=phases.map(function(p){
+    var s=Math.min(G.phaseScores[p.num],p.max);
+    var pct=s/p.max*100;
+    var decs=G.decisions[p.num];
+    return '<div class="score-card">'+
+      '<div class="sc-phase">Phase '+p.num+'</div>'+
+      '<div class="sc-title">'+p.title+'</div>'+
+      '<div class="sc-bar-track"><div class="sc-bar-fill" style="width:'+pct+'%;background:'+p.col+';transition:width 1s '+(p.num*.2)+'s ease;"></div></div>'+
+      '<div class="sc-score" style="color:'+p.col+'">'+s+' / '+p.max+'</div>'+
+      '<div class="sc-note">'+(decs.length?decs.map(function(d){return (d.correct?'&#10003; ':'&#10007; ')+d.q;}).join(' &middot; '):'No decisions recorded')+'</div>'+
+    '</div>';
+  }).join('');
+
+  var s1=G.phaseScores[1],s2=G.phaseScores[2],s3=G.phaseScores[3],s4=G.phaseScores[4];
+  var fb='<strong>Hello '+G.name+'.</strong> ';
+  fb+=s1>=35?'Your diagnostic analysis correctly identified the root cause — broad targeting bringing low-intent traffic. ':s1>=20?'Your diagnosis was partially correct. Study how bounce rate and conversion rate together signal traffic quality issues. ':'Your diagnosis missed key signals. A rising bounce rate alongside a traffic spike indicates low-quality visitors, not a technical fault. ';
+  fb+=s2>=40?'Your metric calculations were accurate and your campaign selection shows strong analytical thinking. ':s2>=20?'Your calculations were partially correct. Practise CR and CPA formulas until they are instinctive. ':'Metric calculation needs significant practice. Master CR = (Conversions &divide; Clicks) &times; 100 and CPA = Cost &divide; Conversions. ';
+  fb+=s3>=35?'Your budget allocation reflects sound channel diversification strategy. ':'Your budget allocation over-invested in some channels, triggering diminishing returns. Aim for a balanced multi-channel spread next time. ';
+  fb+=s4>=25?'Your crisis response was effective — retargeting warm audiences is the optimal strategy when sentiment is volatile and conversions are collapsing.':'Your crisis response could be stronger. In a sentiment crisis, retargeting warm audiences protects conversion rates while the controversy passes.';
+  document.getElementById('analysisFb').innerHTML=fb;
+
+  var phNames={1:'Phase 1 — Diagnosis',2:'Phase 2 — Calculations',3:'Phase 3 — Budget Allocation',4:'Phase 4 — Crisis Response'};
+  document.getElementById('decisionLog').innerHTML='<div class="dl-hd">Decision Log</div>'+[1,2,3,4].map(function(ph){
+    var decs=G.decisions[ph];
+    if(!decs.length) return '';
+    return '<div class="dl-phase-title">'+phNames[ph]+'</div>'+
+      decs.map(function(d){return '<div class="dl-item"><span style="color:'+(d.correct?'var(--brand1)':'var(--red)')+';">'+(d.correct?'&#10003;':'&#10007;')+'</span><span>'+d.q+': '+d.answer+'</span></div>';}).join('');
+  }).join('');
+}
+
+/* ══════════════ PDF ══════════════ */
+function exportPDF(){
+  var sc=Math.max(0,Math.min(200,G.score));
+  var band=sc>=160?'Excellent Analyst':sc>=110?'Strong Analyst':'Developing Analyst';
+  var phRows=[1,2,3,4].map(function(p){
+    var mx={1:40,2:50,3:50,4:40}; var nm={1:'Diagnose the Problem',2:'Calculation Challenge',3:'Budget Allocation',4:'Crisis Response'};
+    var s=Math.min(G.phaseScores[p],mx[p]);
+    return '<tr><td style="padding:8px;border-bottom:1px solid #ddd;">Phase '+p+': '+nm[p]+'</td><td style="padding:8px;border-bottom:1px solid #ddd;text-align:right;font-weight:bold;">'+s+' / '+mx[p]+'</td></tr>';
+  }).join('');
+  var phN={1:'Phase 1 — Diagnosis',2:'Phase 2 — Calculations',3:'Phase 3 — Budget Allocation',4:'Phase 4 — Crisis Response'};
+  var decHTML=[1,2,3,4].map(function(ph){
+    var decs=G.decisions[ph]; if(!decs.length) return '';
+    return '<h4 style="margin:14px 0 6px;color:#333;">'+phN[ph]+'</h4>'+decs.map(function(d){return '<p style="margin:3px 0;font-size:13px;">'+(d.correct?'✓':'✗')+' <strong>'+d.q+':</strong> '+d.answer+'</p>';}).join('');
+  }).join('');
+  var fbTxt=document.getElementById('analysisFb').innerText;
+  var tmp=document.createElement('div');
+  tmp.innerHTML='<div style="font-family:Arial,sans-serif;max-width:680px;margin:0 auto;padding:40px;color:#111;">'+
+    '<div style="text-align:center;margin-bottom:32px;padding-bottom:20px;border-bottom:2px solid #111;">'+
+      '<h1 style="font-size:22px;margin-bottom:2px;">DigitalXperience.ai</h1>'+
+      '<p style="color:#555;font-size:11px;letter-spacing:2px;text-transform:uppercase;">Data Analyst Simulator — Results Report</p>'+
+    '</div>'+
+    '<table style="width:100%;margin-bottom:20px;font-size:14px;">'+
+      '<tr><td style="padding:4px 0;width:110px;"><strong>Analyst:</strong></td><td>'+G.name+'</td></tr>'+
+      '<tr><td style="padding:4px 0;"><strong>Scenario:</strong></td><td>Ecommerce Brand — Digital Analytics Crisis</td></tr>'+
+      '<tr><td style="padding:4px 0;"><strong>Date:</strong></td><td>'+new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})+'</td></tr>'+
+    '</table>'+
+    '<div style="background:#f5f5f5;border-radius:8px;padding:24px;text-align:center;margin-bottom:28px;">'+
+      '<div style="font-size:56px;font-weight:900;color:#111;line-height:1;">'+sc+'</div>'+
+      '<div style="font-size:13px;color:#555;margin-top:2px;">/ 200 points</div>'+
+      '<div style="display:inline-block;padding:6px 20px;background:#8FC32E;color:#000;border-radius:100px;font-size:11px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;margin-top:12px;">'+band+'</div>'+
+    '</div>'+
+    '<h3 style="margin-bottom:10px;">Score Breakdown</h3>'+
+    '<table style="width:100%;border-collapse:collapse;margin-bottom:24px;">'+phRows+'</table>'+
+    '<h3 style="margin-bottom:10px;">Decisions Made</h3>'+decHTML+
+    '<div style="margin-top:24px;padding:16px;background:#f5f5f5;border-radius:8px;">'+
+      '<h4 style="margin-bottom:8px;">Analyst Feedback</h4>'+
+      '<p style="font-size:13px;line-height:1.75;color:#333;">'+fbTxt+'</p>'+
+    '</div>'+
+    '<p style="margin-top:24px;font-size:11px;color:#888;text-align:center;">© 2026 DigitalXperience.ai — Data Analyst Simulator</p>'+
+  '</div>';
+  tmp.style.cssText='position:fixed;left:0;top:0;width:794px;background:#fff;z-index:-9999;overflow:visible;';
+  document.body.appendChild(tmp);
+  html2pdf().set({
+    margin:10,
+    filename:'DA-Simulator-'+G.name.replace(/\s+/g,'-')+'.pdf',
+    image:{type:'jpeg',quality:.98},
+    html2canvas:{scale:2,useCORS:true,backgroundColor:'#ffffff',logging:false},
+    jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}
+  }).from(tmp).save().then(function(){document.body.removeChild(tmp);});
+}
+</script>
+</body>
+</html>
