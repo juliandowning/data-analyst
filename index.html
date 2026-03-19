@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Data Analyst Simulator — DigitalXperience.ai</title>
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 :root{
   --bg:#0a0a0a; --surface:#111111; --card:#181818; --border:#2c2c2c;
@@ -16,12 +15,12 @@
 body{background:var(--bg);color:var(--text);font-family:'Open Sans',sans-serif;min-height:100vh;overflow-x:hidden;}
 body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(143,195,46,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(136,156,231,.025) 1px,transparent 1px);background-size:44px 44px;pointer-events:none;z-index:0;}
 
-/* ── SCREENS ── */
+/* SCREENS */
 .screen{display:none;position:relative;z-index:1;}
 #s-home{min-height:100vh;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:48px 24px 0;}
 #s-results{flex-direction:column;align-items:center;padding:48px 24px 0;min-height:100vh;}
 
-/* ── DX LOGO ── */
+/* DX LOGO */
 .dx-logo{display:inline-flex;align-items:center;gap:8px;}
 .dx-logo-badge{background:linear-gradient(135deg,var(--brand1),var(--brand2));border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;width:32px;height:32px;}
 .dx-logo-badge svg{width:18px;height:18px;}
@@ -37,10 +36,10 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .dx-logo-sm .dx-logo-badge svg{width:13px;height:13px;}
 .dx-logo-sm .dx-logo-text{font-size:.82rem;}
 
-/* ── FOOTER ── */
-.footer{text-align:center;padding:20px 24px 28px;font-size:.75rem;color:var(--muted);border-top:1px solid var(--border);margin-top:44px;line-height:1.9;width:100%;}
+/* FOOTER */
+.footer{text-align:center;padding:20px 24px 28px;font-size:.75rem;color:var(--muted);border-top:1px solid var(--border);margin-top:44px;width:100%;}
 
-/* ── HEADER ── */
+/* HEADER */
 .hdr{background:rgba(8,8,8,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:10px 22px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;gap:12px;}
 .prog-bar{display:flex;align-items:center;gap:6px;flex:1;margin:0 16px;min-width:0;}
 .prog-step{flex:1;height:4px;background:var(--border);border-radius:2px;transition:background .4s;}
@@ -65,7 +64,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .timer-urgent{animation:timerpulse 1s ease infinite;}
 @keyframes timerpulse{0%,100%{opacity:1}50%{opacity:.6}}
 
-/* ── METERS ── */
+/* METERS */
 .meters-bar{background:rgba(8,8,8,.9);border-bottom:1px solid var(--border);padding:8px 22px;display:flex;gap:18px;flex-wrap:wrap;}
 .meter-item{display:flex;align-items:center;gap:7px;min-width:130px;}
 .meter-lbl{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);white-space:nowrap;}
@@ -77,7 +76,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .fill-roi{background:linear-gradient(90deg,var(--red),#ff8fa3);}
 .meter-val{font-family:'DM Mono',monospace;font-size:9px;color:var(--text);width:24px;text-align:right;}
 
-/* ── HOME ── */
+/* HOME */
 .home-logo{margin-bottom:6px;animation:fadeUp .5s ease both;}
 .home-tagline{font-size:.75rem;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-bottom:30px;animation:fadeUp .4s .06s ease both;}
 .home-h{font-size:clamp(2.4rem,6vw,3.8rem);font-weight:800;letter-spacing:-1.8px;line-height:1.04;margin-bottom:14px;animation:fadeUp .4s .1s ease both;}
@@ -94,7 +93,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .btn-launch{padding:18px;background:linear-gradient(135deg,var(--brand1),var(--brand2));color:#000;border:none;border-radius:9px;font-family:'Open Sans',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;transition:all .2s;}
 .btn-launch:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(143,195,46,.3);}
 
-/* ── GAME ── */
+/* GAME */
 #s-game{min-height:100vh;}
 .game-body{max-width:820px;margin:0 auto;padding:32px 26px 110px;}
 @media(max-width:580px){.game-body{padding:20px 14px 110px;}}
@@ -106,7 +105,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .phase-h{font-size:clamp(1.4rem,3vw,2rem);font-weight:800;line-height:1.2;margin-bottom:8px;letter-spacing:-.5px;}
 .phase-sub{font-size:.88rem;color:var(--muted);line-height:1.7;margin-bottom:28px;max-width:620px;}
 
-/* dataset */
+/* DATASET */
 .dataset-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:24px;overflow-x:auto;}
 .dataset-title{font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--brand1);margin-bottom:12px;}
 .data-table{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.8rem;}
@@ -118,7 +117,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .up-val{color:var(--brand1);}
 .warn-val{color:var(--warn);}
 
-/* questions */
+/* QUESTIONS */
 .q-block{margin-bottom:30px;}
 .q-label{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
 .q-text{font-size:clamp(1rem,2.2vw,1.2rem);font-weight:700;line-height:1.3;margin-bottom:16px;letter-spacing:-.3px;}
@@ -136,29 +135,42 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .feedback-box.on{display:block;}
 .feedback-box.good{background:rgba(143,195,46,.07);border:1px solid rgba(143,195,46,.2);color:#c8e87a;}
 .feedback-box.bad{background:rgba(255,77,109,.07);border:1px solid rgba(255,77,109,.2);color:#ffb3be;}
+.q2-divider{display:flex;align-items:center;gap:12px;margin:8px 0 24px;}
+.q2-divider::before,.q2-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.q2-divider-label{font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);white-space:nowrap;}
 
-/* calc */
+/* CALC */
 .calc-grid{display:grid;gap:14px;margin-bottom:18px;}
 .calc-row{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:16px 18px;}
 .calc-row-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px;}
 .calc-lbl{font-weight:700;font-size:.9rem;}
 .calc-formula{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:3px 8px;}
 .calc-inputs{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
-.calc-in{background:var(--surface);border:1.5px solid var(--border);border-radius:7px;padding:10px 12px;font-family:'DM Mono',monospace;font-size:.9rem;color:var(--text);outline:none;width:110px;transition:border-color .2s;}
-.calc-in:focus{border-color:var(--brand2);}
+.calc-in{background:var(--surface);border:1.5px solid var(--border);border-radius:7px;padding:10px 12px;font-family:'DM Mono',monospace;font-size:.9rem;color:var(--text);outline:none;width:100px;transition:border-color .2s;}
+.calc-in:focus{border-color:var(--brand1);}
 .calc-in.ok{border-color:var(--brand1);}
 .calc-in.err{border-color:var(--red);}
 .calc-unit{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--muted);}
 .calc-result{font-family:'DM Mono',monospace;font-size:.72rem;margin-top:6px;min-height:18px;}
 .calc-result.good{color:var(--brand1);}
 .calc-result.bad{color:var(--red);}
-.btn-check{margin-top:4px;padding:13px 24px;background:transparent;border:1.5px solid var(--brand2);border-radius:8px;color:var(--brand2);font-family:'Open Sans',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.btn-check{padding:14px 26px;background:transparent;border:1.5px solid var(--brand2);border-radius:8px;color:var(--brand2);font-family:'Open Sans',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;}
 .btn-check:hover:not(:disabled){background:rgba(136,156,231,.08);}
 .btn-check:disabled{opacity:.3;cursor:not-allowed;}
+.hint-toggle{display:block;width:100%;margin-bottom:14px;padding:11px 16px;background:transparent;border:1px dashed rgba(255,149,0,.4);border-radius:9px;color:var(--warn);font-family:'DM Mono',monospace;font-size:.72rem;cursor:pointer;text-align:left;transition:all .2s;}
+.hint-toggle:hover{background:rgba(255,149,0,.05);border-color:var(--warn);}
+.hint-toggle.hint-used{border-color:var(--red);color:var(--red);background:rgba(255,77,109,.05);}
+.hint-warning{background:rgba(255,77,109,.08);border:1px solid rgba(255,77,109,.25);border-radius:9px;padding:10px 14px;font-family:'DM Mono',monospace;font-size:.72rem;color:var(--red);margin-bottom:8px;}
+.hint-formula{background:rgba(136,156,231,.07);border:1px solid rgba(136,156,231,.2);border-radius:9px;padding:12px 16px;font-family:'DM Mono',monospace;font-size:.82rem;color:var(--brand2);margin-bottom:14px;letter-spacing:.3px;}
 
-/* budget */
+/* BUDGET */
+.p3-brief{background:rgba(136,156,231,.06);border:1px solid rgba(136,156,231,.2);border-radius:11px;padding:13px 15px;margin-bottom:18px;}
+.p3-brief-row{display:flex;align-items:flex-start;gap:10px;font-size:.82rem;color:var(--muted);line-height:1.5;margin-bottom:8px;}
+.p3-brief-row:last-child{margin-bottom:0;}
+.p3-brief-icon{font-size:.9rem;flex-shrink:0;margin-top:1px;}
 .budget-total{background:var(--card);border:1px solid var(--brand1);border-radius:12px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;}
 .budget-total-lbl{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
+.budget-sub-label{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted);margin-top:2px;}
 .budget-remaining{font-family:'DM Mono',monospace;font-size:1.4rem;font-weight:700;color:var(--brand1);transition:color .3s;}
 .budget-remaining.over{color:var(--red);}
 .budget-channels{display:grid;gap:12px;margin-bottom:18px;}
@@ -166,8 +178,10 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .budget-ch-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
 .budget-ch-name{font-weight:700;font-size:.92rem;display:flex;align-items:center;gap:8px;}
 .budget-ch-icon{font-size:1.1rem;}
+.budget-ch-right{text-align:right;}
 .budget-ch-stats{font-family:'DM Mono',monospace;font-size:.67rem;color:var(--muted);}
 .budget-ch-val{font-family:'DM Mono',monospace;font-size:1rem;font-weight:700;color:var(--brand1);}
+.budget-optimal{font-family:'DM Mono',monospace;font-size:.62rem;color:var(--brand1);margin-top:2px;}
 .budget-slider{width:100%;appearance:none;height:5px;border-radius:3px;background:var(--border);outline:none;cursor:pointer;margin-bottom:8px;}
 .budget-slider::-webkit-slider-thumb{appearance:none;width:18px;height:18px;border-radius:50%;background:var(--brand1);cursor:pointer;box-shadow:0 0 8px rgba(143,195,46,.4);}
 .budget-bar-track{height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
@@ -175,7 +189,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .diminish-warning{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--warn);margin-top:5px;display:none;}
 .diminish-warning.show{display:block;}
 
-/* crisis */
+/* CRISIS */
 .crisis-opts{display:grid;gap:14px;}
 .crisis-btn{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:18px 20px;text-align:left;cursor:pointer;transition:all .18s;color:var(--text);font-family:'Open Sans',sans-serif;width:100%;}
 .crisis-btn:hover:not(.locked){border-color:var(--brand2);transform:translateY(-1px);}
@@ -185,25 +199,21 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .crisis-btn.locked{cursor:default;opacity:.45;}
 .crisis-btn-title{font-size:.95rem;font-weight:800;margin-bottom:4px;}
 .crisis-btn-desc{font-size:.82rem;color:var(--muted);line-height:1.55;}
-.crisis-impact{font-family:'DM Mono',monospace;font-size:.68rem;margin-top:8px;padding:4px 10px;border-radius:5px;display:inline-block;}
-.impact-high{background:rgba(143,195,46,.1);color:var(--brand1);}
-.impact-med{background:rgba(255,149,0,.1);color:var(--warn);}
-.impact-low{background:rgba(255,77,109,.1);color:var(--red);}
 
-/* bottom bar */
+/* BOTTOM BAR */
 .bbar{position:fixed;bottom:0;left:0;right:0;background:rgba(8,8,8,.97);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:12px 22px;display:none;align-items:center;justify-content:space-between;gap:12px;z-index:200;}
 .bbar-status{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--muted);flex:1;}
 .btn-next{padding:14px 28px;background:linear-gradient(135deg,var(--brand1),var(--brand2));color:#000;border:none;border-radius:9px;font-family:'Open Sans',sans-serif;font-size:.95rem;font-weight:800;cursor:pointer;transition:all .2s;opacity:.35;pointer-events:none;}
 .btn-next.ready{opacity:1;pointer-events:auto;}
 .btn-next.ready:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(143,195,46,.3);}
 
-/* toast */
+/* TOAST */
 .toast{position:fixed;top:80px;right:24px;padding:11px 16px;border-radius:9px;font-family:'DM Mono',monospace;font-size:.78rem;font-weight:700;z-index:999;transform:translateX(130%);transition:transform .3s ease;pointer-events:none;}
 .toast.show{transform:translateX(0);}
 .toast.good{background:rgba(143,195,46,.12);border:1px solid var(--brand1);color:var(--brand1);}
 .toast.bad{background:rgba(255,77,109,.12);border:1px solid var(--red);color:var(--red);}
 
-/* results */
+/* RESULTS */
 .res-eyebrow{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
 .res-title{font-size:clamp(2rem,5vw,3rem);font-weight:800;letter-spacing:-1.2px;margin-bottom:6px;}
 .res-title span{color:var(--brand1);}
@@ -240,34 +250,11 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 .fade-in{animation:fadeUp .35s ease both;}
-
-/* Q2 reveal */
-.q2-locked{opacity:.4;pointer-events:none;transition:opacity .4s ease;}
-.q2-unlocked{opacity:1;pointer-events:auto;transition:opacity .4s ease;}
-.q2-divider{display:flex;align-items:center;gap:12px;margin:8px 0 24px;}
-.q2-divider::before,.q2-divider::after{content:'';flex:1;height:1px;background:var(--border);}
-.q2-divider-label{font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);white-space:nowrap;}
-
-/* Hint toggle */
-.hint-toggle{display:block;width:100%;margin-top:20px;padding:12px 16px;background:transparent;border:1px dashed rgba(255,149,0,.4);border-radius:9px;color:var(--warn);font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.5px;cursor:pointer;text-align:left;transition:all .2s;}
-.hint-toggle:hover{background:rgba(255,149,0,.05);border-color:var(--warn);}
-.hint-toggle.hint-used{border-color:var(--red);color:var(--red);background:rgba(255,77,109,.05);}
-.hint-warning{background:rgba(255,77,109,.08);border:1px solid rgba(255,77,109,.25);border-radius:9px;padding:10px 14px;font-family:'DM Mono',monospace;font-size:.72rem;color:var(--red);margin-bottom:4px;}
-.hint-formula{background:rgba(136,156,231,.07);border:1px solid rgba(136,156,231,.2);border-radius:9px;padding:12px 16px;font-family:'DM Mono',monospace;font-size:.82rem;color:var(--brand2);margin-top:8px;letter-spacing:.3px;}
-
-/* Phase 3 brief */
-.p3-brief{background:rgba(136,156,231,.06);border:1px solid rgba(136,156,231,.2);border-radius:11px;padding:13px 15px;margin-bottom:18px;}
-.p3-brief-row{display:flex;align-items:flex-start;gap:10px;font-size:.82rem;color:var(--muted);line-height:1.5;margin-bottom:8px;}
-.p3-brief-row:last-child{margin-bottom:0;}
-.p3-brief-icon{font-size:.9rem;flex-shrink:0;margin-top:1px;}
-.budget-ch-right{text-align:right;}
-.budget-optimal{font-family:'DM Mono',monospace;font-size:.62rem;color:var(--brand1);margin-top:2px;}
-.budget-sub-label{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted);margin-top:2px;}
 </style>
 </head>
 <body>
 
-<!-- ══ HOME ══ -->
+<!-- HOME -->
 <div id="s-home" class="screen">
   <div class="home-logo">
     <div class="dx-logo dx-logo-lg">
@@ -276,13 +263,13 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
       </div>
       <div class="dx-logo-stack">
         <div class="dx-logo-text">Digital<span>Xperience</span>.ai</div>
-        <div class="dx-logo-sub">Analytics Academy</div>
+        <div class="dx-logo-sub">Data Analyst Simulator</div>
       </div>
     </div>
   </div>
-  <div class="home-tagline">Data Analyst Decision Simulator</div>
+  <div class="home-tagline">4th-Year Digital Marketing &middot; Live Simulation</div>
   <h1 class="home-h">Think like a<br><em>Data Analyst</em></h1>
-  <p class="home-sub">Four real-world analytics phases. Diagnose performance problems, calculate efficiency metrics, allocate marketing budget, and manage a live brand crisis — all scored against the <strong>Analytics Score (AS)</strong>.</p>
+  <p class="home-sub">Four real-world analytics phases. Diagnose performance problems, calculate efficiency metrics, allocate marketing budget, and manage a live brand crisis &mdash; all scored against the <strong>Analytics Score (AS)</strong>.</p>
   <div class="reg-form">
     <input type="text" class="reg-in" id="nameIn" placeholder="Your name or team name" maxlength="40" autocomplete="off">
     <button class="btn-launch" onclick="startGame()">Launch Simulation &rarr;</button>
@@ -293,10 +280,10 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
     <div class="meta-item"><div class="meta-dot" style="background:var(--brand1)"></div>AS Max 200</div>
     <div class="meta-item"><div class="meta-dot" style="background:var(--brand2)"></div>25&ndash;30 Minutes</div>
   </div>
-  <div class="footer">&copy; 2026 DigitalXperience.ai &mdash; All rights reserved. Unauthorised copying or reproduction prohibited.</div>
+  <div class="footer">&copy; 2026 DigitalXperience.ai &mdash; All rights reserved.</div>
 </div>
 
-<!-- ══ GAME ══ -->
+<!-- GAME -->
 <div id="s-game" class="screen">
   <div class="hdr">
     <div class="dx-logo dx-logo-sm">
@@ -308,13 +295,13 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
       </div>
     </div>
     <div class="prog-bar">
-      <div class="prog-step active" id="ps1"></div>
+      <div class="prog-step" id="ps1"></div>
       <div class="prog-step" id="ps2"></div>
       <div class="prog-step" id="ps3"></div>
       <div class="prog-step" id="ps4"></div>
     </div>
     <div class="hdr-right">
-      <div class="team-chip" id="teamChip">—</div>
+      <div class="team-chip" id="teamChip">&mdash;</div>
       <div class="spi-pill">AS&nbsp;<span class="spi-val" id="scoreDisplay">0</span></div>
       <div class="timer-outer">
         <div class="timer-label">Time Left</div>
@@ -341,7 +328,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   </div>
 </div>
 
-<!-- ══ RESULTS ══ -->
+<!-- RESULTS -->
 <div id="s-results" class="screen">
   <div class="res-eyebrow">Simulation Complete</div>
   <h2 class="res-title">Data <span>Analyst</span> Score</h2>
@@ -358,9 +345,9 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
     <div class="feedback-text" id="analysisFb"></div>
   </div>
   <div class="decision-log" id="decisionLog"></div>
-  <button class="btn-pdf" onclick="exportPDF()">&#128438; Download My Strategy (PDF)</button>
+  <button class="btn-pdf" onclick="exportPDF()">&#128438; Save Results as PDF</button>
   <button class="btn-restart" onclick="location.reload()">Play Again &rarr;</button>
-  <div class="footer">&copy; 2026 DigitalXperience.ai &mdash; All rights reserved. Unauthorised copying or reproduction prohibited.</div>
+  <div class="footer">&copy; 2026 DigitalXperience.ai &mdash; All rights reserved.</div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -632,14 +619,14 @@ function renderPhase2(el){
     '</div>'+
     '<div class="q-block">'+
       '<div class="q-label">Task 1 — Calculate Metrics</div>'+
-      '<div class="calc-grid">'+rows+'</div>'+
       '<button class="hint-toggle" id="hintToggle" onclick="toggleCalcHint()">'+
         '&#9888; Show formulas — costs 50% of available points'+
       '</button>'+
       '<div id="calcHint" style="display:none;">'+
         '<div class="hint-warning">&#9888; Formula hint active — max score for this task is now 10 pts</div>'+
-        '<div class="hint-formula">CR = (Conversions ÷ Clicks) × 100 &nbsp;&nbsp;|   CPA = Cost ÷ Conversions</div>'+
+        '<div class="hint-formula">CR = (Conversions ÷ Clicks) × 100 &nbsp;|&nbsp; CPA = Cost ÷ Conversions</div>'+
       '</div>'+
+      '<div class="calc-grid" style="margin-top:14px;">'+rows+'</div>'+
       '<button class="btn-check" id="btnCalc" onclick="checkCalcs()" style="margin-top:14px;">Check My Calculations</button>'+
       '<div class="feedback-box" id="fb2calc"></div>'+
     '</div>'+
@@ -991,52 +978,74 @@ function showResults(){
 function exportPDF(){
   var sc=Math.max(0,Math.min(200,G.score));
   var band=sc>=160?'Excellent Analyst':sc>=110?'Strong Analyst':'Developing Analyst';
-  var phRows=[1,2,3,4].map(function(p){
-    var mx={1:40,2:50,3:50,4:40}; var nm={1:'Diagnose the Problem',2:'Calculation Challenge',3:'Budget Allocation',4:'Crisis Response'};
-    var s=Math.min(G.phaseScores[p],mx[p]);
-    return '<tr><td style="padding:8px;border-bottom:1px solid #ddd;">Phase '+p+': '+nm[p]+'</td><td style="padding:8px;border-bottom:1px solid #ddd;text-align:right;font-weight:bold;">'+s+' / '+mx[p]+'</td></tr>';
+  var date=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  var phNames={1:'Diagnose the Problem',2:'Calculation Challenge',3:'Budget Allocation',4:'Crisis Response'};
+  var maxPts={1:40,2:50,3:50,4:40};
+  var css='body{font-family:Arial,sans-serif;max-width:700px;margin:0 auto;padding:40px 32px;color:#111;font-size:14px;line-height:1.6;}'
+    +'h1{font-size:22px;margin:0 0 4px;} h2{font-size:13px;font-weight:normal;color:#555;margin:0 0 28px;letter-spacing:2px;text-transform:uppercase;}'
+    +'h3{font-size:12px;font-weight:bold;margin:20px 0 8px;border-bottom:2px solid #8FC32E;padding-bottom:4px;color:#333;text-transform:uppercase;letter-spacing:1px;}'
+    +'.header{text-align:center;padding-bottom:20px;border-bottom:2px solid #111;margin-bottom:24px;}'
+    +'.meta td{padding:3px 0;} .meta td:first-child{font-weight:bold;width:90px;}'
+    +'.score-box{background:#f5f5f5;border-radius:8px;padding:20px;text-align:center;margin:20px 0;}'
+    +'.score-num{font-size:52px;font-weight:900;line-height:1;}'
+    +'.score-max{font-size:13px;color:#777;margin-top:2px;}'
+    +'.band{display:inline-block;padding:5px 16px;background:#8FC32E;color:#000;border-radius:100px;font-size:11px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;margin-top:10px;}'
+    +'.bk td{padding:5px 8px;border-bottom:1px solid #eee;font-size:13px;} .bk .pts{text-align:right;font-weight:bold;color:#5a9a1e;}'
+    +'.ph-lbl{font-size:10px;font-weight:bold;color:#889CE7;text-transform:uppercase;letter-spacing:1px;margin:14px 0 5px;}'
+    +'.dec{display:flex;gap:8px;margin-bottom:4px;font-size:13px;}'
+    +'.ok{color:#5a9a1e;font-weight:bold;} .bad{color:#cc3355;font-weight:bold;}'
+    +'.fb{background:#f5f5f5;border-radius:6px;padding:14px 16px;font-size:13px;color:#333;line-height:1.7;}'
+    +'.footer{margin-top:28px;text-align:center;font-size:11px;color:#aaa;border-top:1px solid #eee;padding-top:16px;}'
+    +'@media print{.noprint{display:none;}body{padding:20px 24px;}}';
+
+  var metaRows='<tr><td>Analyst</td><td>'+esc(G.name)+'</td></tr>'
+    +'<tr><td>Scenario</td><td>Ecommerce Brand</td></tr>'
+    +'<tr><td>Date</td><td>'+date+'</td></tr>';
+
+  var bkRows=[1,2,3,4].map(function(p){
+    var s=Math.min(G.phaseScores[p],maxPts[p]);
+    return '<tr><td>Phase '+p+': '+phNames[p]+'</td><td class="pts">'+s+' / '+maxPts[p]+'</td></tr>';
   }).join('');
-  var phN={1:'Phase 1 — Diagnosis',2:'Phase 2 — Calculations',3:'Phase 3 — Budget Allocation',4:'Phase 4 — Crisis Response'};
+
   var decHTML=[1,2,3,4].map(function(ph){
-    var decs=G.decisions[ph]; if(!decs.length) return '';
-    return '<h4 style="margin:14px 0 6px;color:#333;">'+phN[ph]+'</h4>'+decs.map(function(d){return '<p style="margin:3px 0;font-size:13px;">'+(d.correct?'✓':'✗')+' <strong>'+d.q+':</strong> '+d.answer+'</p>';}).join('');
+    var decs=G.decisions[ph]||[]; if(!decs.length) return '';
+    return '<div class="ph-lbl">Phase '+ph+' \u2014 '+phNames[ph]+'</div>'
+      +decs.map(function(d){
+        return '<div class="dec"><span class="'+(d.correct?'ok':'bad')+'">'+(d.correct?'\u2713':'\u2717')+'</span>'
+          +'<span>'+esc(d.q)+': '+esc(d.answer)+'</span></div>';
+      }).join('');
   }).join('');
-  var fbTxt=document.getElementById('analysisFb').innerText;
-  var tmp=document.createElement('div');
-  tmp.innerHTML='<div style="font-family:Arial,sans-serif;max-width:680px;margin:0 auto;padding:40px;color:#111;">'+
-    '<div style="text-align:center;margin-bottom:32px;padding-bottom:20px;border-bottom:2px solid #111;">'+
-      '<h1 style="font-size:22px;margin-bottom:2px;">DigitalXperience.ai</h1>'+
-      '<p style="color:#555;font-size:11px;letter-spacing:2px;text-transform:uppercase;">Data Analyst Simulator — Results Report</p>'+
-    '</div>'+
-    '<table style="width:100%;margin-bottom:20px;font-size:14px;">'+
-      '<tr><td style="padding:4px 0;width:110px;"><strong>Analyst:</strong></td><td>'+G.name+'</td></tr>'+
-      '<tr><td style="padding:4px 0;"><strong>Scenario:</strong></td><td>Ecommerce Brand — Digital Analytics Crisis</td></tr>'+
-      '<tr><td style="padding:4px 0;"><strong>Date:</strong></td><td>'+new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})+'</td></tr>'+
-    '</table>'+
-    '<div style="background:#f5f5f5;border-radius:8px;padding:24px;text-align:center;margin-bottom:28px;">'+
-      '<div style="font-size:56px;font-weight:900;color:#111;line-height:1;">'+sc+'</div>'+
-      '<div style="font-size:13px;color:#555;margin-top:2px;">/ 200 points</div>'+
-      '<div style="display:inline-block;padding:6px 20px;background:#8FC32E;color:#000;border-radius:100px;font-size:11px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;margin-top:12px;">'+band+'</div>'+
-    '</div>'+
-    '<h3 style="margin-bottom:10px;">Score Breakdown</h3>'+
-    '<table style="width:100%;border-collapse:collapse;margin-bottom:24px;">'+phRows+'</table>'+
-    '<h3 style="margin-bottom:10px;">Decisions Made</h3>'+decHTML+
-    '<div style="margin-top:24px;padding:16px;background:#f5f5f5;border-radius:8px;">'+
-      '<h4 style="margin-bottom:8px;">Analyst Feedback</h4>'+
-      '<p style="font-size:13px;line-height:1.75;color:#333;">'+fbTxt+'</p>'+
-    '</div>'+
-    '<p style="margin-top:24px;font-size:11px;color:#888;text-align:center;">© 2026 DigitalXperience.ai — Data Analyst Simulator</p>'+
-  '</div>';
-  tmp.style.cssText='position:fixed;left:0;top:0;width:794px;background:#fff;z-index:-9999;overflow:visible;';
-  document.body.appendChild(tmp);
-  html2pdf().set({
-    margin:10,
-    filename:'DA-Simulator-'+G.name.replace(/\s+/g,'-')+'.pdf',
-    image:{type:'jpeg',quality:.98},
-    html2canvas:{scale:2,useCORS:true,backgroundColor:'#ffffff',logging:false},
-    jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}
-  }).from(tmp).save().then(function(){document.body.removeChild(tmp);});
+
+  var fbEl=document.getElementById('analysisFb');
+  var fbTxt=fbEl?fbEl.innerText:'';
+
+  var html='<!DOCTYPE html><html><head><meta charset="UTF-8">'
+    +'<title>DA Simulator Results \u2014 '+esc(G.name)+'</title>'
+    +'<style>'+css+'</style></head><body>'
+    +'<div class="header"><h1>DigitalXperience.ai</h1><h2>Data Analyst Simulator \u2014 Results Report</h2></div>'
+    +'<table class="meta">'+metaRows+'</table>'
+    +'<div class="score-box"><div class="score-num">'+sc+'</div><div class="score-max">/ 200 points</div><div class="band">'+band+'</div></div>'
+    +'<h3>Score Breakdown</h3><table class="bk" style="width:100%;border-collapse:collapse;">'+bkRows+'</table>'
+    +'<h3>Decisions Made</h3>'+decHTML
+    +'<h3>Analyst Feedback</h3><div class="fb">'+esc(fbTxt)+'</div>'
+    +'<div class="footer">\u00a9 2026 DigitalXperience.ai \u2014 Data Analyst Simulator</div>'
+    +'<p class="noprint" style="margin-top:20px;text-align:center;font-size:13px;color:#777;background:#fffbe6;border:1px solid #e6c84a;border-radius:6px;padding:12px;">'
+      +'&#128395; In the print dialog, set <strong>Destination</strong> to <strong>Save as PDF</strong>, then click Save.'
+    +'</p></body></html>';
+
+  var win=window.open('','_blank');
+  if(!win){showToast('Please allow pop-ups to export','bad');return;}
+  win.document.write(html);
+  win.document.close();
+  win.focus();
+  setTimeout(function(){win.print();},600);
+  showToast('Print dialog opening \u2014 choose Save as PDF','good');
 }
+
+function esc(s){
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
 </script>
 </body>
 </html>
