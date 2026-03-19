@@ -250,6 +250,40 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 .fade-in{animation:fadeUp .35s ease both;}
+
+/* PRINT */
+#print-area{display:none;}
+@media print{
+  body{background:#fff!important;color:#111!important;}
+  body::before{display:none!important;}
+  #s-home,#s-game,#s-results .res-eyebrow,#s-results .res-title,
+  #s-results .res-team,#s-results .spi-card,#s-results .score-grid,
+  #s-results .feedback-section,#s-results .decision-log,
+  #s-results .btn-pdf,#s-results .btn-restart,#s-results .footer,
+  .bbar,.toast{display:none!important;}
+  #s-results{display:block!important;padding:0!important;min-height:0!important;background:#fff!important;}
+  #print-area{display:block!important;}
+}
+.print-header{text-align:center;padding-bottom:18px;border-bottom:2px solid #111;margin-bottom:22px;}
+.print-header h1{font-size:20px;font-family:Arial,sans-serif;margin:0 0 3px;}
+.print-header p{font-size:11px;color:#555;letter-spacing:2px;text-transform:uppercase;font-family:Arial,sans-serif;}
+.print-meta{width:100%;font-size:13px;font-family:Arial,sans-serif;margin-bottom:18px;border-collapse:collapse;}
+.print-meta td{padding:3px 0;}
+.print-meta td:first-child{font-weight:bold;width:90px;color:#333;}
+.print-score{background:#f5f5f5;border-radius:8px;padding:18px;text-align:center;margin-bottom:22px;}
+.print-score-num{font-size:48px;font-weight:900;line-height:1;font-family:Arial,sans-serif;color:#111;}
+.print-score-max{font-size:12px;color:#777;margin-top:2px;font-family:Arial,sans-serif;}
+.print-band{display:inline-block;margin-top:10px;padding:4px 16px;background:#8FC32E;color:#000;border-radius:100px;font-size:10px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;font-family:Arial,sans-serif;}
+.print-h3{font-size:11px;font-weight:bold;margin:18px 0 7px;border-bottom:2px solid #8FC32E;padding-bottom:3px;color:#333;text-transform:uppercase;letter-spacing:1px;font-family:Arial,sans-serif;}
+.print-bk{width:100%;border-collapse:collapse;font-size:12px;font-family:Arial,sans-serif;margin-bottom:4px;}
+.print-bk td{padding:5px 6px;border-bottom:1px solid #eee;}
+.print-bk .pts{text-align:right;font-weight:bold;color:#5a9a1e;}
+.print-ph{font-size:10px;font-weight:bold;color:#889CE7;text-transform:uppercase;letter-spacing:1px;margin:12px 0 4px;font-family:Arial,sans-serif;}
+.print-dec{display:flex;gap:8px;margin-bottom:3px;font-size:12px;font-family:Arial,sans-serif;}
+.print-ok{color:#5a9a1e;font-weight:bold;}
+.print-bad{color:#cc3355;font-weight:bold;}
+.print-fb{background:#f5f5f5;border-radius:6px;padding:12px 14px;font-size:12px;color:#333;line-height:1.7;font-family:Arial,sans-serif;}
+.print-footer{margin-top:24px;text-align:center;font-size:10px;color:#aaa;border-top:1px solid #eee;padding-top:14px;font-family:Arial,sans-serif;}
 </style>
 </head>
 <body>
@@ -347,6 +381,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   <div class="decision-log" id="decisionLog"></div>
   <button class="btn-pdf" onclick="exportPDF()">&#128438; Save Results as PDF</button>
   <button class="btn-restart" onclick="location.reload()">Play Again &rarr;</button>
+  <div id="print-area"></div>
   <div class="footer">&copy; 2026 DigitalXperience.ai &mdash; All rights reserved.</div>
 </div>
 
@@ -981,25 +1016,9 @@ function exportPDF(){
   var date=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
   var phNames={1:'Diagnose the Problem',2:'Calculation Challenge',3:'Budget Allocation',4:'Crisis Response'};
   var maxPts={1:40,2:50,3:50,4:40};
-  var css='body{font-family:Arial,sans-serif;max-width:700px;margin:0 auto;padding:40px 32px;color:#111;font-size:14px;line-height:1.6;}'
-    +'h1{font-size:22px;margin:0 0 4px;} h2{font-size:13px;font-weight:normal;color:#555;margin:0 0 28px;letter-spacing:2px;text-transform:uppercase;}'
-    +'h3{font-size:12px;font-weight:bold;margin:20px 0 8px;border-bottom:2px solid #8FC32E;padding-bottom:4px;color:#333;text-transform:uppercase;letter-spacing:1px;}'
-    +'.header{text-align:center;padding-bottom:20px;border-bottom:2px solid #111;margin-bottom:24px;}'
-    +'.meta td{padding:3px 0;} .meta td:first-child{font-weight:bold;width:90px;}'
-    +'.score-box{background:#f5f5f5;border-radius:8px;padding:20px;text-align:center;margin:20px 0;}'
-    +'.score-num{font-size:52px;font-weight:900;line-height:1;}'
-    +'.score-max{font-size:13px;color:#777;margin-top:2px;}'
-    +'.band{display:inline-block;padding:5px 16px;background:#8FC32E;color:#000;border-radius:100px;font-size:11px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;margin-top:10px;}'
-    +'.bk td{padding:5px 8px;border-bottom:1px solid #eee;font-size:13px;} .bk .pts{text-align:right;font-weight:bold;color:#5a9a1e;}'
-    +'.ph-lbl{font-size:10px;font-weight:bold;color:#889CE7;text-transform:uppercase;letter-spacing:1px;margin:14px 0 5px;}'
-    +'.dec{display:flex;gap:8px;margin-bottom:4px;font-size:13px;}'
-    +'.ok{color:#5a9a1e;font-weight:bold;} .bad{color:#cc3355;font-weight:bold;}'
-    +'.fb{background:#f5f5f5;border-radius:6px;padding:14px 16px;font-size:13px;color:#333;line-height:1.7;}'
-    +'.footer{margin-top:28px;text-align:center;font-size:11px;color:#aaa;border-top:1px solid #eee;padding-top:16px;}'
-    +'@media print{.noprint{display:none;}body{padding:20px 24px;}}';
 
   var metaRows='<tr><td>Analyst</td><td>'+esc(G.name)+'</td></tr>'
-    +'<tr><td>Scenario</td><td>Ecommerce Brand</td></tr>'
+    +'<tr><td>Scenario</td><td>Ecommerce Brand &mdash; Digital Analytics Crisis</td></tr>'
     +'<tr><td>Date</td><td>'+date+'</td></tr>';
 
   var bkRows=[1,2,3,4].map(function(p){
@@ -1009,37 +1028,27 @@ function exportPDF(){
 
   var decHTML=[1,2,3,4].map(function(ph){
     var decs=G.decisions[ph]||[]; if(!decs.length) return '';
-    return '<div class="ph-lbl">Phase '+ph+' \u2014 '+phNames[ph]+'</div>'
+    return '<div class="print-ph">Phase '+ph+' — '+phNames[ph]+'</div>'
       +decs.map(function(d){
-        return '<div class="dec"><span class="'+(d.correct?'ok':'bad')+'">'+(d.correct?'\u2713':'\u2717')+'</span>'
+        return '<div class="print-dec"><span class="'+(d.correct?'print-ok':'print-bad')+'">'+(d.correct?'✓':'✗')+'</span>'
           +'<span>'+esc(d.q)+': '+esc(d.answer)+'</span></div>';
       }).join('');
   }).join('');
 
   var fbEl=document.getElementById('analysisFb');
-  var fbTxt=fbEl?fbEl.innerText:'';
+  var fbTxt=fbEl?fbEl.innerHTML:'';
 
-  var html='<!DOCTYPE html><html><head><meta charset="UTF-8">'
-    +'<title>DA Simulator Results \u2014 '+esc(G.name)+'</title>'
-    +'<style>'+css+'</style></head><body>'
-    +'<div class="header"><h1>DigitalXperience.ai</h1><h2>Data Analyst Simulator \u2014 Results Report</h2></div>'
-    +'<table class="meta">'+metaRows+'</table>'
-    +'<div class="score-box"><div class="score-num">'+sc+'</div><div class="score-max">/ 200 points</div><div class="band">'+band+'</div></div>'
-    +'<h3>Score Breakdown</h3><table class="bk" style="width:100%;border-collapse:collapse;">'+bkRows+'</table>'
-    +'<h3>Decisions Made</h3>'+decHTML
-    +'<h3>Analyst Feedback</h3><div class="fb">'+esc(fbTxt)+'</div>'
-    +'<div class="footer">\u00a9 2026 DigitalXperience.ai \u2014 Data Analyst Simulator</div>'
-    +'<p class="noprint" style="margin-top:20px;text-align:center;font-size:13px;color:#777;background:#fffbe6;border:1px solid #e6c84a;border-radius:6px;padding:12px;">'
-      +'&#128395; In the print dialog, set <strong>Destination</strong> to <strong>Save as PDF</strong>, then click Save.'
-    +'</p></body></html>';
+  document.getElementById('print-area').innerHTML=
+    '<div class="print-header"><h1>DigitalXperience.ai</h1><p>Data Analyst Simulator — Results Report</p></div>'
+    +'<table class="print-meta">'+metaRows+'</table>'
+    +'<div class="print-score"><div class="print-score-num">'+sc+'</div><div class="print-score-max">/ 200 points</div><div class="print-band">'+band+'</div></div>'
+    +'<div class="print-h3">Score Breakdown</div>'
+    +'<table class="print-bk">'+bkRows+'</table>'
+    +'<div class="print-h3">Decisions Made</div>'+decHTML
+    +'<div class="print-h3">Analyst Feedback</div><div class="print-fb">'+fbTxt+'</div>'
+    +'<div class="print-footer">© 2026 DigitalXperience.ai — Data Analyst Simulator</div>';
 
-  var win=window.open('','_blank');
-  if(!win){showToast('Please allow pop-ups to export','bad');return;}
-  win.document.write(html);
-  win.document.close();
-  win.focus();
-  setTimeout(function(){win.print();},600);
-  showToast('Print dialog opening \u2014 choose Save as PDF','good');
+  window.print();
 }
 
 function esc(s){
